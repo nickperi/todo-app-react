@@ -1,11 +1,15 @@
 import {useState} from 'react';
 import { useEffect } from 'react';
 
-const AddTodo = ({addTodo}) => {
+const AddTodo = ({addTodo, isLoggedIn}) => {
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('personal');
     const [dueDate, setDueDate] = useState('');
     const [dueTime, setDueTime] = useState('');
+
+  if(!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
 
     const handleSubmit = (event) => {
         event.preventDefault();

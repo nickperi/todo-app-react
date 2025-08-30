@@ -8,8 +8,8 @@ const Login = ({loginUser}) => {
         event.preventDefault();
         const user = {username:username, password:password};  
         loginUser(user);
-        setUsername('');
-        setPassword('');
+        //setUsername('');
+        //setPassword('');
     }
 
     const handleUsernameChange = (event) => {

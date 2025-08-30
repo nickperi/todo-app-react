@@ -22,6 +22,11 @@ li {
   list-style: none;
 }
 
+a {
+  color: #09d3ac;
+  text-decoration: none;
+}
+
 .added {
   background-color: transparent;
   color: lime;
