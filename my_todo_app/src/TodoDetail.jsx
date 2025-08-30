@@ -10,7 +10,21 @@ function TodoDetail({todos}) {
   const { id } = useParams();
   const todo = todos.find(todo => todo.id === parseInt(id));
 
-  return (
+  if(todo.done) {
+    return (
+    <div>
+      <h2>{todo.text}</h2>
+      <h3>User: {todo.user_id}</h3>
+      <h3>Category: {todo.category}</h3>
+      <h3>Done: {todo.done?"Yes":"No"}</h3>
+      <h3>Date Due: {todo.date_due}</h3>
+      <h3>Date Completed: {todo.date_completed}</h3>
+    </div>
+  );
+  }
+
+  else {
+    return (
     <div>
       <h2>{todo.text}</h2>
       <h3>User: {todo.user_id}</h3>
@@ -19,5 +33,7 @@ function TodoDetail({todos}) {
       <h3>Date Due: {todo.date_due}</h3>
     </div>
   );
+  }
+
 }
 export default TodoDetail;
