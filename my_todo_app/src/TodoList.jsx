@@ -1,9 +1,9 @@
 import {Link} from 'react-router-dom'
 import { BsCheckSquare } from "react-icons/bs";
 import { BsCheckSquareFill } from "react-icons/bs";
+import { FaPlus } from "react-icons/fa";
 import {useState} from 'react';
 import { Navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 
 function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, isLoggedIn}) {
     const [filter, setFilter] = useState('all');
@@ -47,6 +47,10 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, isLogg
 
     return (
         <div>
+            <Link to="/add-todo"><FaPlus/></Link>
+            <br/><br/>
+            &nbsp; &nbsp;
+            <label htmlFor="filter">Filter Todos: </label>
             <select name="filter" id="filter" value={filter} onChange={(e) => setFilter(e.target.value)}>
                 <option value="all">All</option>
                 <option value="date-due">Sort by Date Due</option>

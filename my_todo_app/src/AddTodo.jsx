@@ -1,11 +1,14 @@
 import {useState} from 'react';
-import { useEffect } from 'react';
+import {useEffect} from 'react';
+import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AddTodo = ({addTodo, isLoggedIn}) => {
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('personal');
     const [dueDate, setDueDate] = useState('');
     const [dueTime, setDueTime] = useState('');
+    const navigate = useNavigate();
 
   if(!isLoggedIn) {
     return <Navigate to="/login" />;
@@ -15,10 +18,10 @@ const AddTodo = ({addTodo, isLoggedIn}) => {
         event.preventDefault();
         const todo = {text:title, category:category, date_due:dueDate, time_due:dueTime};  
         addTodo(todo);
-        setTitle('');
-        setCategory('personal');
-        setDueDate('');
-        setDueTime('');
+        //setTitle('');
+        //setCategory('personal');
+        //setDueDate('');
+        //setDueTime('');
     }
 
     const handleTitleChange = (event) => {

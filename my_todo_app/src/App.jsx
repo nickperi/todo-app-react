@@ -15,13 +15,13 @@ function App() {
   const [todosByDateCreated, setTodosByDateCreated] = useState([]);
   const [todosByDateDue, setTodosByDateDue] = useState([]);
   const [students, setStudents] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [isLoggedIn, setIsLoggedIn] = useState(token?true:false);
   const navigate = useNavigate();
 
 
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/api/todos', {headers: {
+    fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
             "Authorization": `Bearer ${token}`}})
     .then(response => {
@@ -43,7 +43,7 @@ function App() {
 
   useEffect(() => {
     
-    fetch('http://127.0.0.1:5000/api/todos/sort-by-date-created', {headers: {
+    fetch('https://projectflaskmvc.onrender.com/api/todos/sort-by-date-created', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
             "Authorization": `Bearer ${token}`}})
     .then(response => {
@@ -63,7 +63,7 @@ function App() {
   
   useEffect(() => {
 
-    fetch('http://127.0.0.1:5000/api/todos/sort-by-date-due', {headers: {
+    fetch('https://projectflaskmvc.onrender.com/api/todos/sort-by-date-due', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
             "Authorization": `Bearer ${token}`}})
     .then(response => {
@@ -83,7 +83,7 @@ function App() {
 
 
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/api/students')
+    fetch('https://projectflaskmvc.onrender.com/api/students')
     .then(response => {
       if(!response.ok) {
         throw new Error('Network response was not ok');
@@ -112,7 +112,7 @@ function App() {
         body: JSON.stringify(todo) // Convert the JavaScript object to a JSON string
     };
 
-    fetch('http://127.0.0.1:5000/api/todos', options)
+    fetch('https://projectflaskmvc.onrender.com/api/todos', options)
       .then(response => {
         if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -122,6 +122,8 @@ function App() {
         .then(data => {
             console.log(data);
             setTodos([...todos, data.todo]); // Append the new todo to the existing list
+            navigate('/');
+            window.location.reload();
         })
         .catch(error => {
             console.error('Error:', error);
@@ -145,7 +147,7 @@ function App() {
         }
     }
 
-    fetch('http://127.0.0.1:5000/todos/'+id+'/check', options)
+    fetch('https://projectflaskmvc.onrender.com/todos/'+id+'/check', options)
       .then(response => {
         if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -176,7 +178,7 @@ function App() {
         body: JSON.stringify(user) // Convert the JavaScript object to a JSON string
     };
 
-    fetch('http://127.0.0.1:5000/api/login', options)
+    fetch('https://projectflaskmvc.onrender.com/api/login', options)
       .then(response => {
         if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -189,6 +191,7 @@ function App() {
             setToken(data.access_token);
             setIsLoggedIn(true);
             navigate('/');
+            window.location.reload();
         })
         .catch(error => {
             console.error('Error:', error);
