@@ -15,7 +15,7 @@ function App() {
   const [todosByDateCreated, setTodosByDateCreated] = useState([]);
   const [todosByDateDue, setTodosByDateDue] = useState([]);
   const [students, setStudents] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [token, setToken] = useState(sessionStorage.getItem('token') || '');
   const [isLoggedIn, setIsLoggedIn] = useState(token?true:false);
   const navigate = useNavigate();
 
@@ -31,6 +31,9 @@ function App() {
       return response.json();
     })
     .then(data => {
+      data.forEach(todo => {
+        todo.isEditable = false;
+      });
       setTodos(data);
     })
     .catch(error => {
@@ -53,6 +56,9 @@ function App() {
       return response.json();
     })
     .then(data => {
+      data.forEach(todo => {
+        todo.isEditable = false;
+      });
       setTodosByDateCreated(data);
     })
     .catch(error => {
@@ -73,6 +79,9 @@ function App() {
       return response.json();
     })
     .then(data => {
+      data.forEach(todo => {
+        todo.isEditable = false;
+      });
       setTodosByDateDue(data);
     })
     .catch(error => {
@@ -168,6 +177,42 @@ function App() {
   }
 
 
+  function enableEditing(id) {
+    const todosCopy = [...todos];
+    const todo = todosCopy.find(t => t.id === parseInt(id));
+    todo.isEditable = true;
+    setTodos(todosCopy);
+  }
+
+  function saveTitle(id, newTitle) {
+    const todosCopy = [...todos];
+    const todo = todosCopy.find(t => t.id === parseInt(id));
+    todo.text = newTitle;
+    todo.isEditable = false;
+    setTodos(todosCopy);
+    
+    // Here you would also want to update the backend about the change
+    fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text: newTitle }), // Send only the updated title
+    }).then(response => { 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }                       
+      return response.json();
+    }).then(data => {
+      console.log('Title updated successfully:', data); 
+    }).catch(error => {
+      console.error('Error updating title:', error);      
+    });  
+
+    }
+
+
 
   const loginUser = (user) => {
     const options = {
@@ -187,7 +232,7 @@ function App() {
         })
         .then(data => {
             console.log(data);
-            localStorage.setItem('token', data.access_token);
+            sessionStorage.setItem('token', data.access_token);
             setToken(data.access_token);
             setIsLoggedIn(true);
             navigate('/');
@@ -204,7 +249,7 @@ function App() {
     <div>
       
       <Routes>
-          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} isLoggedIn={isLoggedIn} />}/>
+          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} saveTitle={saveTitle} isLoggedIn={isLoggedIn} />}/>
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
