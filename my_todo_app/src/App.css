@@ -32,6 +32,7 @@ a {
   color: lime;
   border: none;
   font-size: medium;
+  padding: 0%;
 }
 
 .removed {
@@ -39,6 +40,21 @@ a {
     color:crimson;
     border: none;
     font-size: medium;
+    padding: 0%;
+}
+
+.edit {
+  background-color: transparent;
+  color: orangered;
+  border: none;
+  padding: 0%;
+}
+
+.confirm {
+  background-color: transparent;
+  color: dodgerblue;
+  border: none;
+  padding: 0%;
 }
 
 @keyframes logo-spin {

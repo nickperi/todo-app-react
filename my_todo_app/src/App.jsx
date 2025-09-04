@@ -38,6 +38,7 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      navigate('/login');
     });
   }, []);
 
@@ -63,6 +64,7 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      navigate('/login');
     });
   }, []);
   
@@ -86,6 +88,7 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      navigate('/login');
     });
   }, []);
 
@@ -104,6 +107,7 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      navigate('/login');
     });
   }, []);
 
@@ -188,27 +192,28 @@ function App() {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
     todo.text = newTitle;
+    console.log("New title: ", newTitle);
     todo.isEditable = false;
     setTodos(todosCopy);
     
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ text: newTitle }), // Send only the updated title
-    }).then(response => { 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }                       
-      return response.json();
-    }).then(data => {
-      console.log('Title updated successfully:', data); 
-    }).catch(error => {
-      console.error('Error updating title:', error);      
-    });  
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text: newTitle }), // Send only the updated title
+      }).then(response => { 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }                       
+        return response.json();
+      }).then(data => {
+        console.log('Title updated successfully:', data); 
+      }).catch(error => {
+        console.error('Error updating title:', error);      
+      });  
 
     }
 
