@@ -183,18 +183,44 @@ function App() {
 
   function enableEditing(id) {
     const todosCopy = [...todos];
+    const todosByDateCreatedCopy = [...todosByDateCreated];
+    const todosByDateDueCopy = [...todosByDateDue];
+
     const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
+    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
+
     todo.isEditable = true;
+    todoByDateCreated.isEditable = true;
+    todoByDateDue.isEditable = true;
+
     setTodos(todosCopy);
+    setTodosByDateCreated(todosByDateCreatedCopy);
+    setTodosByDateDue(todosByDateDueCopy);
   }
+
+
 
   function saveTitle(id, newTitle) {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
+
+    const todosByDateCreatedCopy = [...todosByDateCreated];
+    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
+
+    const todosByDateDueCopy = [...todosByDateDue];
+    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
+
     todo.text = newTitle;
+    todoByDateCreated.title = newTitle;
+    todoByDateDue.title = newTitle;
     console.log("New title: ", newTitle);
     todo.isEditable = false;
+    todoByDateCreated.isEditable = false;
+    todoByDateDue.isEditable = false;
     setTodos(todosCopy);
+    setTodosByDateCreated(todosByDateCreatedCopy);
+    setTodosByDateDue(todosByDateDueCopy);
     
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
@@ -213,6 +239,47 @@ function App() {
         console.log('Title updated successfully:', data); 
       }).catch(error => {
         console.error('Error updating title:', error);      
+      });  
+
+    }
+
+
+  function saveCategory(id, newCategory) {
+    const todosCopy = [...todos];
+    const todo = todosCopy.find(t => t.id === parseInt(id));
+
+    const todosByDateCreatedCopy = [...todosByDateCreated];
+    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
+
+    const todosByDateDueCopy = [...todosByDateDue];
+    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
+
+    todo.category = newCategory;
+    todoByDateCreated.category = newCategory;
+    todoByDateDue.category = newCategory;
+    console.log("New category: ", todo.category);
+    
+    setTodos(todosCopy);
+    setTodosByDateCreated(todosByDateCreatedCopy);
+    setTodosByDateDue(todosByDateDueCopy);
+    
+    // Here you would also want to update the backend about the change
+    fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ category: newCategory }), // Send only the updated title
+      }).then(response => { 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }                       
+        return response.json();
+      }).then(data => {
+        console.log('Category updated successfully:', data); 
+      }).catch(error => {
+        console.error('Error updating category:', error);      
       });  
 
     }
@@ -254,7 +321,7 @@ function App() {
     <div>
       
       <Routes>
-          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} saveTitle={saveTitle} isLoggedIn={isLoggedIn} />}/>
+          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} saveTitle={saveTitle} saveCategory={saveCategory} isLoggedIn={isLoggedIn} />}/>
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />

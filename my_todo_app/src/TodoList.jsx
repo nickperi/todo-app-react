@@ -7,9 +7,14 @@ import { GiConfirmed } from "react-icons/gi";
 import { FaInfoCircle } from "react-icons/fa";
 import {useState} from 'react';
 import { Navigate } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
 
-function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, saveTitle, isLoggedIn}) {
+function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, saveTitle, saveCategory, isLoggedIn}) {
     const [filter, setFilter] = useState('all');
+    const itemRefs = useRef([]);
+    const [currIndex, setIndex] = useState(-1);
+    const [newTitle, setTitle] = useState('');
+    const [isEditing, setEditing] = useState(false);
 
     const IconWithCaption = ({IconComponent, caption}) => {
         return (
@@ -20,68 +25,131 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
         );
     };
 
-    function getTodoItem(todo) {
-        if(todo.done) {
-              if(todo.isEditable) {
-                    return <tr key={todo.id}> 
-                            <td><button className='added' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                            <td><span contentEditable={todo.isEditable} onBlur={(e) => {saveTitle(todo.id, e.currentTarget.textContent)}}>{todo.text}</span>&nbsp;&nbsp;</td>
-                            <td><button className='confirm'><GiConfirmed/></button>&nbsp;&nbsp;</td>
-                            <td><span>Completed on {todo.date_completed}</span>&nbsp;&nbsp;</td>
-                            <td><Link to={`todos/${todo.id}`}><FaInfoCircle/></Link></td>
-                        </tr>
-                    }
 
-                else {
-                        return <tr key={todo.id}> 
-                            <td><button className='added' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                            <td><span contentEditable={todo.isEditable}>{todo.text}</span>&nbsp;&nbsp;</td>
-                            <td><button className='edit' onClick={() => enableEditing(todo.id)}><MdEdit/></button>&nbsp;&nbsp; </td>
-                            <td><span> Completed on {todo.date_completed}</span>&nbsp;&nbsp;</td>
-                            <td><Link to={`todos/${todo.id}`}><FaInfoCircle/></Link></td>
-                        </tr>
-                    }
-        }
+    function TodoItem({todo}) {
+        const [selectedCategory, setCategory] = useState(todo.category);
+        const options = [
+            {label:1, value:"job application"},
+            {label:2, value:"work"},
+            {label:3, value:"personal"},
+            {label:4, value:"shopping"},
+            {label:5, value:"urgent"},
+            {label:6, value:"reminder"},
+            {label:7, value:"other"}
+        ]; 
 
-        else {
-                if(todo.isEditable) {
-                    return <tr key={todo.id}> 
-                        <td><button className='removed' onClick={() => toggleTodo(todo.id)}><BsCheckSquare/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td><span contentEditable={todo.isEditable} onBlur={(e) => saveTitle(todo.id, e.target.textContent)}>{todo.text}</span>&nbsp;&nbsp;</td>
-                        <td><button className='confirm'><GiConfirmed/></button>&nbsp;&nbsp;</td>
-                        <td><span>Due on {todo.date_due}</span>&nbsp;&nbsp;</td>
-                        <td><Link to={`todos/${todo.id}`}><FaInfoCircle/></Link></td>
-                    </tr>
-                    } 
+        const changeCategory = (e) => {
+            setCategory(e.target.value);
+            saveCategory(todo.id, e.target.value);
+        };
+
+            return <>
+                {todo.done ?
+                    <tr key={todo.id}>
+                        <td><button className='added' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        <td><span  ref={element => (itemRefs.current[todo.id-1] = element)} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
+                        
+                        <td>
+                            <select value={selectedCategory} onChange={changeCategory} disabled>
+                                {options.map((option) => (
+                                    <option value={option.value}>{option.value}</option>
+                                ))}
+                            </select>
+                        </td>
+                        
+
+                        {todo.isEditable ? 
+                            (<td><button className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button></td>) : 
+                            (<td><button className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button></td>)
+                        }
+                        
+                    </tr> :
                     
-                    else {
-                         return <tr key={todo.id}> 
-                        <td><button className='removed' onClick={() => toggleTodo(todo.id)}><BsCheckSquare/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td><span contentEditable={todo.isEditable}>{todo.text}</span>&nbsp;&nbsp;</td>
-                         <td><button className='edit' onClick={() => enableEditing(todo.id)}><MdEdit/></button>&nbsp;&nbsp;</td>
-                        <td><span>Due on {todo.date_due}</span> &nbsp;&nbsp;</td>
-                        <td><Link to={`todos/${todo.id}`}><FaInfoCircle/></Link></td>
-                    </tr>
+                    <tr key={todo.id}>
+                        <td><button className='removed' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        <td><span  ref={element => (itemRefs.current[todo.id-1] = element)} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
+                        <td>
+                            <select value={selectedCategory} onChange={changeCategory} disabled>
+                                {options.map((option) => (
+                                    <option value={option.value}>{option.value}</option>
+                                ))}
+                            </select>
+                        </td>
+                        
+                        
+                        {todo.isEditable ? 
+                            (<td><button className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button></td>) : 
+                            (<td><button className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button></td>)
+                        }
+                        
+
+                    </tr>} 
+                </>  
+    }
+
+    const handleEdit = (id) => {
+        setIndex(id-1);
+        console.log('Editing: ' + isEditing);
+
+        if(!isEditing){
+            enableEditing(id);
+            setEditing(true);
+            console.log("title editing enabled for title ");
+
+                todos.forEach(todo => {
+                    if (todo.id === parseInt(id)) {
+                        console.log(todo.text);
                     }
+                });
+
+            console.log('Editing: ' + isEditing);
+        }
+        else {
+            console.log("Cannot edit title ");
+
+                todos.forEach(todo => {
+                    if (todo.id === parseInt(id)) {
+                        console.log(todo.text);
+                    }
+                }); 
+                
+            console.log(" as another title is editable");
+        }
+    };
+
+    const handleSave = (id) => {
+        setIndex(-1);
+        console.log('Editing: ' + isEditing);
+
+        if(isEditing) {
+            setEditing(false);
+            saveTitle(id, newTitle);
+            console.log("title saved");
+            console.log('Editing: ' + isEditing);
+            console.log('');
+            setTitle('');
+        } else {
+             console.log("Could not save this title: " + newTitle);
         }
     }
 
-    function getTodoList(filter) {
+    function TodoListItems({filter}) {
+        
         if(filter === 'date-due') {
             return todosByDateDue.map(todo => {
-               return getTodoItem(todo);
+               return <TodoItem todo={todo}/>;
             });
         }
 
         if(filter === 'date-created') {
             return todosByDateCreated.map(todo => {
-                return getTodoItem(todo);
+                return <TodoItem todo={todo}/>;
             });
         }
 
         if(filter === 'all') {
             return todos.map(todo => {
-                return getTodoItem(todo);
+                return <TodoItem todo={todo}/>;
         });
         }
         return null;
@@ -90,6 +158,21 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
     if(!isLoggedIn) {
         return <Navigate to="/login" replace/>;
     }
+
+    useEffect(() => {
+        //console.log(itemRefs.current[currIndex]);
+      if (currIndex > -1 && itemRefs.current[currIndex]) {
+        itemRefs.current[currIndex].focus();
+        // Optionally, set the caret position if needed
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.selectNodeContents(itemRefs.current[currIndex]);
+        range.collapse(false); // Collapses the range to the end
+        selection.removeAllRanges();
+        selection.addRange(range);
+        //setEditing(false);
+      }
+    }, [currIndex, isEditing]);
 
 
     return (
@@ -106,15 +189,14 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
             <br/><br/>
             <table>
                 <thead>
-                    <th>Mark as Done &nbsp;&nbsp;&nbsp;&nbsp;</th>
-                    <th>Title</th>
-                    <th>Edit Title&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                    <th>Date Due / Completed</th>
-                    <th>View</th>
+                    <tr>
+                        <th>Mark Done</th><th>Title</th><th>Category</th><th>Edit Task</th><th>Edit Category</th>
+                    </tr>
                 </thead>
 
-                <tbody>{getTodoList(filter)}</tbody>
+                <tbody><TodoListItems filter={filter}/></tbody>
             </table>
+
         </div>
     );
 }

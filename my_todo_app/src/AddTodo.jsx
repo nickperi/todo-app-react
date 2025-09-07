@@ -58,7 +58,7 @@ const AddTodo = ({addTodo, isLoggedIn}) => {
             <div>
                 <label htmlFor="category">Select Category:</label>
                 <select id="category" name="category" value={category} onChange={handleCategoryChange}>
-                    <option value="job-application">Job Application</option>
+                    <option value="job application">Job Application</option>
                     <option value="work">Work</option>
                     <option value="personal">Personal</option>
                     <option value="shopping">Shopping</option>
