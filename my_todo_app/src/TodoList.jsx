@@ -9,12 +9,11 @@ import {useState} from 'react';
 import { Navigate } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 
-function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, saveTitle, saveCategory, isLoggedIn}) {
+function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, isLoggedIn}) {
     const [filter, setFilter] = useState('all');
-    const itemRefs = useRef([]);
-    const [currIndex, setIndex] = useState(-1);
-    const [newTitle, setTitle] = useState('');
     const [isEditing, setEditing] = useState(false);
+    const [isEditingCategory, setEditingCategory] = useState(false);
+
 
     const IconWithCaption = ({IconComponent, caption}) => {
         return (
@@ -26,60 +25,127 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
     };
 
 
-    function TodoItem({todo}) {
+    function TodoItem({todo, }) {
+        const itemRef = useRef(null);
+        const [newTitle, setTitle] = useState(todo.text);
         const [selectedCategory, setCategory] = useState(todo.category);
+
         const options = [
-            {label:1, value:"job application"},
-            {label:2, value:"work"},
-            {label:3, value:"personal"},
-            {label:4, value:"shopping"},
-            {label:5, value:"urgent"},
-            {label:6, value:"reminder"},
-            {label:7, value:"other"}
+            {label:'Job Application', value:"job application"},
+            {label:'Work', value:"work"},
+            {label:'Personal', value:"personal"},
+            {label:'Shopping', value:"shopping"},
+            {label:'Urgent', value:"urgent"},
+            {label:'Reminder', value:"reminder"},
+            {label:'Other', value:"other"}
         ]; 
 
-        const changeCategory = (e) => {
-            setCategory(e.target.value);
-            saveCategory(todo.id, e.target.value);
+
+        const handleEdit = (id) => {
+            if(!isEditing){
+                enableEditing(id);
+                setEditing(true);
+            }
         };
+
+        const handleSave = (id) => {
+            if(isEditing) {
+                saveTitle(id, newTitle);
+                setEditing(false);
+            }
+        }
+
+        const handleCategorySelect = () => {
+            if(!isEditingCategory) {
+                enableCategoryDropdown(todo.id);
+                setEditingCategory(true);
+            }
+        };
+
+        const changeCategory = (e) => {
+            if(isEditingCategory)
+                setCategory(e.target.value);
+        };
+
+        const handleCategorySave = () => {
+            saveCategory(todo.id, selectedCategory);
+            setEditingCategory(false);
+        };
+
+        useEffect(() => {
+            if (itemRef.current && todo.isEditable) {
+                itemRef.current.focus();
+                // Optionally, set the caret position if needed
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(itemRef.current);
+                range.collapse(false); // Collapses the range to the end
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }, []);
 
             return <>
                 {todo.done ?
                     <tr key={todo.id}>
                         <td><button className='added' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td><span  ref={element => (itemRefs.current[todo.id-1] = element)} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
-                        
-                        <td>
-                            <select value={selectedCategory} onChange={changeCategory} disabled>
-                                {options.map((option) => (
-                                    <option value={option.value}>{option.value}</option>
-                                ))}
-                            </select>
-                        </td>
-                        
+                        <td><span ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
 
                         {todo.isEditable ? 
                             (<td><button className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button></td>) : 
                             (<td><button className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button></td>)
                         }
                         
+                        {todo.isCategoryEditable ?
+                        
+                        (<td>
+                            <select value={selectedCategory} onChange={changeCategory}>
+                                {options.map((option) => (
+                                    <option value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+                        </td>) :
+
+                        (<td>
+                            <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span>
+                        </td>)
+                        }
+                        
+
+                        {todo.isCategoryEditable ?
+                            (<td><button className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button></td>) : 
+                            (<td><button className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button></td>)
+                        }
+                        
                     </tr> :
                     
                     <tr key={todo.id}>
                         <td><button className='removed' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td><span  ref={element => (itemRefs.current[todo.id-1] = element)} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
-                        <td>
-                            <select value={selectedCategory} onChange={changeCategory} disabled>
-                                {options.map((option) => (
-                                    <option value={option.value}>{option.value}</option>
-                                ))}
-                            </select>
-                        </td>
-                        
-                        
+                        <td><span  ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
+
                         {todo.isEditable ? 
                             (<td><button className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button></td>) : 
                             (<td><button className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button></td>)
+                        }
+                        
+                        {todo.isCategoryEditable ?
+                        
+                            (<td>
+                                <select value={selectedCategory} onChange={changeCategory}>
+                                    {options.map((option) => (
+                                        <option value={option.value}>{option.label}</option>
+                                    ))}
+                                </select>
+                            </td>) :
+
+                            (<td>
+                               <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span>
+                            </td>)
+                        }
+
+                        {todo.isCategoryEditable ?
+                            (<td><button className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button></td>) : 
+                            (<td><button className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button></td>)
                         }
                         
 
@@ -87,69 +153,23 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
                 </>  
     }
 
-    const handleEdit = (id) => {
-        setIndex(id-1);
-        console.log('Editing: ' + isEditing);
-
-        if(!isEditing){
-            enableEditing(id);
-            setEditing(true);
-            console.log("title editing enabled for title ");
-
-                todos.forEach(todo => {
-                    if (todo.id === parseInt(id)) {
-                        console.log(todo.text);
-                    }
-                });
-
-            console.log('Editing: ' + isEditing);
-        }
-        else {
-            console.log("Cannot edit title ");
-
-                todos.forEach(todo => {
-                    if (todo.id === parseInt(id)) {
-                        console.log(todo.text);
-                    }
-                }); 
-                
-            console.log(" as another title is editable");
-        }
-    };
-
-    const handleSave = (id) => {
-        setIndex(-1);
-        console.log('Editing: ' + isEditing);
-
-        if(isEditing) {
-            setEditing(false);
-            saveTitle(id, newTitle);
-            console.log("title saved");
-            console.log('Editing: ' + isEditing);
-            console.log('');
-            setTitle('');
-        } else {
-             console.log("Could not save this title: " + newTitle);
-        }
-    }
-
     function TodoListItems({filter}) {
         
         if(filter === 'date-due') {
             return todosByDateDue.map(todo => {
-               return <TodoItem todo={todo}/>;
+               return <TodoItem todo={todo} key={todo.id}/>;
             });
         }
 
         if(filter === 'date-created') {
             return todosByDateCreated.map(todo => {
-                return <TodoItem todo={todo}/>;
+                return <TodoItem todo={todo} key={todo.id}/>;
             });
         }
 
         if(filter === 'all') {
             return todos.map(todo => {
-                return <TodoItem todo={todo}/>;
+                return <TodoItem todo={todo} key={todo.id}/>;
         });
         }
         return null;
@@ -158,21 +178,6 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
     if(!isLoggedIn) {
         return <Navigate to="/login" replace/>;
     }
-
-    useEffect(() => {
-        //console.log(itemRefs.current[currIndex]);
-      if (currIndex > -1 && itemRefs.current[currIndex]) {
-        itemRefs.current[currIndex].focus();
-        // Optionally, set the caret position if needed
-        const range = document.createRange();
-        const selection = window.getSelection();
-        range.selectNodeContents(itemRefs.current[currIndex]);
-        range.collapse(false); // Collapses the range to the end
-        selection.removeAllRanges();
-        selection.addRange(range);
-        //setEditing(false);
-      }
-    }, [currIndex, isEditing]);
 
 
     return (
@@ -190,7 +195,7 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
             <table>
                 <thead>
                     <tr>
-                        <th>Mark Done</th><th>Title</th><th>Category</th><th>Edit Task</th><th>Edit Category</th>
+                        <th>Mark Done</th><th>Title</th><th>Edit Task</th><th>Category</th><th>Edit Category</th>
                     </tr>
                 </thead>
 

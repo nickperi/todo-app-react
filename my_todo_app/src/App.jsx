@@ -33,6 +33,7 @@ function App() {
     .then(data => {
       data.forEach(todo => {
         todo.isEditable = false;
+        todo.isCategoryEditable = false;
       });
       setTodos(data);
     })
@@ -59,6 +60,7 @@ function App() {
     .then(data => {
       data.forEach(todo => {
         todo.isEditable = false;
+        todo.isCategoryEditable = false;
       });
       setTodosByDateCreated(data);
     })
@@ -83,6 +85,7 @@ function App() {
     .then(data => {
       data.forEach(todo => {
         todo.isEditable = false;
+        todo.isCategoryEditable = false;
       });
       setTodosByDateDue(data);
     })
@@ -115,7 +118,8 @@ function App() {
 
 
   const addTodo = (todo) => {
-    
+    todo.isEditable = false;
+    todo.isCategoryEditable = false;
     const options = {
         method: 'POST',
         headers: {
@@ -200,6 +204,25 @@ function App() {
   }
 
 
+  function enableCategoryDropdown(id) {
+    const todosCopy = [...todos];
+    const todosByDateCreatedCopy = [...todosByDateCreated];
+    const todosByDateDueCopy = [...todosByDateDue];
+
+    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
+    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
+
+    todo.isCategoryEditable = true;
+    todoByDateCreated.isCategoryEditable = true;
+    todoByDateDue.isCategoryEditable = true;
+
+    setTodos(todosCopy);
+    setTodosByDateCreated(todosByDateCreatedCopy);
+    setTodosByDateDue(todosByDateDueCopy);
+  }
+
+
 
   function saveTitle(id, newTitle) {
     const todosCopy = [...todos];
@@ -257,7 +280,11 @@ function App() {
     todo.category = newCategory;
     todoByDateCreated.category = newCategory;
     todoByDateDue.category = newCategory;
-    console.log("New category: ", todo.category);
+    console.log("New category: ", newCategory);
+
+    todo.isCategoryEditable = false;
+    todoByDateCreated.isCategoryEditable = false;
+    todoByDateDue.isCategoryEditable = false;
     
     setTodos(todosCopy);
     setTodosByDateCreated(todosByDateCreatedCopy);
@@ -321,7 +348,7 @@ function App() {
     <div>
       
       <Routes>
-          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} saveTitle={saveTitle} saveCategory={saveCategory} isLoggedIn={isLoggedIn} />}/>
+          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isLoggedIn={isLoggedIn} />}/>
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />

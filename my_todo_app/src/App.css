@@ -54,9 +54,23 @@ a {
   padding: 0%;
 }
 
+.edit-category {
+  background-color: transparent;
+  color:fuchsia;
+  border: none;
+  padding: 0%;
+}
+
 .confirm {
   background-color: transparent;
   color: dodgerblue;
+  border: none;
+  padding: 0%;
+}
+
+.confirm-category {
+  background-color: transparent;
+  color:cyan;
   border: none;
   padding: 0%;
 }
