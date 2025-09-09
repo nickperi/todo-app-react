@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom'
-import { BsCheckSquare } from "react-icons/bs";
-import { BsCheckSquareFill } from "react-icons/bs";
+import { MdCheckBoxOutlineBlank } from "react-icons/md";
+import { MdCheckBox } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { GiConfirmed } from "react-icons/gi";
@@ -15,16 +15,6 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
     const [isEditingCategory, setEditingCategory] = useState(false);
 
 
-    const IconWithCaption = ({IconComponent, caption}) => {
-        return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <IconComponent />
-          <span style={{ marginLeft: '8px' }}>{caption}</span>
-        </div>
-        );
-    };
-
-
     function TodoItem({todo, }) {
         const itemRef = useRef(null);
         const [newTitle, setTitle] = useState(todo.text);
@@ -33,6 +23,7 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
         const options = [
             {label:'Job Application', value:"job application"},
             {label:'Work', value:"work"},
+            {label: 'School', value:"school"},
             {label:'Personal', value:"personal"},
             {label:'Shopping', value:"shopping"},
             {label:'Urgent', value:"urgent"},
@@ -87,69 +78,86 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
 
             return <>
                 {todo.done ?
-                    <tr key={todo.id}>
-                        <td><button className='added' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td><span ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
+                    <div 
+                        key={todo.id}           
+                        style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "10px",
+                        padding: "1rem",
+                        backgroundColor: todo.done ? "royalblue" : "darkorchid",
+                    }}>
 
-                        {todo.isEditable ? 
-                            (<td><button className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button></td>) : 
-                            (<td><button className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button></td>)
-                        }
+                        <div>
+                            <button className='added' onClick={() => toggleTodo(todo.id)}><MdCheckBox/></button> &nbsp;&nbsp;
+                            <h2 style={{display:'inline-block'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent)}}>{todo.text}</h2> &nbsp;&nbsp;
+
+                            {todo.isEditable ? 
+                                (<button title='Save task title' className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button>) : 
+                                (<button title='Edit task title' className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button>)
+                            }
+                        </div>
                         
                         {todo.isCategoryEditable ?
-                        
-                        (<td>
-                            <select value={selectedCategory} onChange={changeCategory}>
-                                {options.map((option) => (
-                                    <option value={option.value}>{option.label}</option>
-                                ))}
-                            </select>
-                        </td>) :
-
-                        (<td>
-                            <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span>
-                        </td>)
-                        }
-                        
-
-                        {todo.isCategoryEditable ?
-                            (<td><button className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button></td>) : 
-                            (<td><button className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button></td>)
-                        }
-                        
-                    </tr> :
-                    
-                    <tr key={todo.id}>
-                        <td><button className='removed' onClick={() => toggleTodo(todo.id)}><BsCheckSquareFill/></button>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                        <td><span  ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent)}}>{todo.text}</span></td>
-
-                        {todo.isEditable ? 
-                            (<td><button className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button></td>) : 
-                            (<td><button className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button></td>)
-                        }
-                        
-                        {todo.isCategoryEditable ?
-                        
-                            (<td>
+                            (<div>
+                                <span>Category:</span>
                                 <select value={selectedCategory} onChange={changeCategory}>
                                     {options.map((option) => (
                                         <option value={option.value}>{option.label}</option>
                                     ))}
-                                </select>
-                            </td>) :
+                                </select> &nbsp;&nbsp;
+                                <button title='Save category' className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button>
+                            </div>) :
 
-                            (<td>
-                               <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span>
-                            </td>)
-                        }
+                            (<div>
+                                <span>Category: </span>
+                                <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span> &nbsp;&nbsp;
+                                 <button title='Edit category' className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button>
+                            </div>)
+                            } 
+
+                        <Link title='View task' to={`/todos/${todo.id}`}><FaInfoCircle/></Link>
+                    </div> :
+                    
+                    <div 
+                        key={todo.id}
+                        style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "10px",
+                        padding: "1rem",
+                        backgroundColor: todo.done ? "royalblue" : "darkorchid",
+                    }}>
+                        <div>
+                            <button className='removed' onClick={() => toggleTodo(todo.id)}><MdCheckBoxOutlineBlank /></button>&nbsp;&nbsp;
+                            <h2 style={{display:'inline-block'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent)}}>{todo.text}</h2>&nbsp;&nbsp;
+
+                            {todo.isEditable ? 
+                                (<button title='Save task title' className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button>) : 
+                                (<button title='Edit task title' className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button>)
+                            }
+                        </div>
 
                         {todo.isCategoryEditable ?
-                            (<td><button className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button></td>) : 
-                            (<td><button className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button></td>)
-                        }
                         
+                            (<div>
+                                <span>Category: </span>
+                                <select value={selectedCategory} onChange={changeCategory}>
+                                    {options.map((option) => (
+                                        <option value={option.value}>{option.label}</option>
+                                    ))}
+                                </select> &nbsp;&nbsp;
+                                <button title='Save category' className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button>
+                            </div>) :
 
-                    </tr>} 
+                            (<div>
+                                <span>Category: </span> 
+                                <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span> &nbsp;&nbsp;
+                                <button title='Edit category' className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button>
+                            </div>)
+                        }
+
+                        <Link title='View task' to={`/todos/${todo.id}`}><FaInfoCircle/></Link>
+
+                    </div>} 
                 </>  
     }
 
@@ -190,17 +198,10 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
             </select>
 
             <h1>Todo List</h1>
-            <Link id="add-todo-link" to="/add-todo"><button><FaPlus/> Add To-do</button></Link>
+            <Link id="add-todo-link" to="/add-todo"><button className='add-todo'><FaPlus/> Add To-do</button></Link>
             <br/><br/>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mark Done</th><th>Title</th><th>Edit Task</th><th>Category</th><th>Edit Category</th>
-                    </tr>
-                </thead>
-
-                <tbody><TodoListItems filter={filter}/></tbody>
-            </table>
+    
+            <div style={{ display: "grid", gap: "1rem", maxWidth: "400px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems filter={filter}/></div>
 
         </div>
     );

@@ -2,7 +2,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: justify;
+  text-align: center;
 }
 
 .logo {
@@ -26,16 +26,30 @@ table, th {
   padding-right: 5rem;
 }
 
+td {
+  border-bottom: 0.5px solid grey;
+}
+
 a {
   color: #09d3ac;
   text-decoration: none;
+}
+
+.add-todo {
+  background-color:navy;
+  color: cyan;
+  border: none;
+}
+
+.add-todo:hover {
+  background-color: blue;
 }
 
 .added {
   background-color: transparent;
   color: lime;
   border: none;
-  font-size: medium;
+  font-size: large;
   padding: 0%;
 }
 
@@ -43,7 +57,7 @@ a {
     background-color: transparent;
     color:crimson;
     border: none;
-    font-size: medium;
+    font-size: large;
     padding: 0%;
 }
 

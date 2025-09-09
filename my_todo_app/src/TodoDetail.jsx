@@ -13,7 +13,15 @@ function TodoDetail({todos, isLoggedIn}) {
 
   if(todo.done) {
     return (
-    <div>
+    <div 
+      style={{
+              border: "1px solid #ccc",
+              borderRadius: "10px",
+              padding: "1rem", 
+              backgroundColor: "navy"
+            }}
+    >
+
       <h2>{todo.text}</h2>
       <h3>User: {todo.user_id}</h3>
       <h3>Category: {todo.category}</h3>
@@ -26,7 +34,13 @@ function TodoDetail({todos, isLoggedIn}) {
 
   else {
     return (
-    <div>
+    <div  style={{
+              border: "1px solid #ccc",
+              borderRadius: "10px",
+              padding: "1rem", 
+              backgroundColor: "deeppink"
+            }}>
+
       <h2>{todo.text}</h2>
       <h3>User: {todo.user_id}</h3>
       <h3>Category: {todo.category}</h3>
