@@ -8,7 +8,9 @@ import Login from './Login.jsx';
 import TodoList from './TodoList.jsx';
 import AddTodo from './AddTodo.jsx';
 import TodoDetail from './TodoDetail.jsx';
+import SearchTodosByDate from './TodosByDueDate.jsx';
 import './App.css';
+import TodosByDueDate from './TodosByDueDate.jsx';
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -352,6 +354,7 @@ function App() {
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
+          <Route path="/todos-due-on/:date_due" element={<TodosByDueDate />} />
       </Routes>
     </div>
   );
