@@ -23,7 +23,6 @@ function App() {
 
   const [token, setToken] = useState(sessionStorage.getItem('token') || '');
   const [isLoggedIn, setIsLoggedIn] = useState(token?true:false);
-  const [dueDate, setDueDate] = useState('2025-8-13');
   const navigate = useNavigate();
 
 
@@ -104,43 +103,6 @@ function App() {
 
 
 
-    useEffect(() => {
-        const date = new Date(dueDate);
-        const year = date.getFullYear();
-        const month = date.getMonth()+1;
-        const day = date.getDate();
-        const dateString = `${year}_${month}_${day}`;
-        console.log(dateString);
-
-        fetch(`https://projectflaskmvc.onrender.com/api/todos/${dateString}`, {
-            method: 'GET',
-            headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-            "Authorization": `Bearer ${token}`},
-        })
-        .then(response => {
-            if(!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            data.forEach(todo => {
-            todo.isEditable = false;
-            todo.isCategoryEditable = false;
-        });
-
-        setTodosDueOnDate(data);
-        })
-        .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        navigate('/login');
-        });
-    }, []);
-
-
-
   useEffect(() => {
     fetch('https://projectflaskmvc.onrender.com/api/students')
     .then(response => {
@@ -157,8 +119,6 @@ function App() {
       navigate('/login');
     });
   }, []);
-
-
 
 
   const addTodo = (todo) => {
@@ -258,15 +218,6 @@ function App() {
   }
 
 
-  function enableEditingODD(id) {
-    const todosDueOnDateCopy = [...todosDueOnDate];
-    const todoDueOnDate = todosDueOnDateCopy.find(t => t.id === parseInt(id));
-    todoDueOnDate.isEditable = true;
-    setTodosDueOnDate(todosDueOnDateCopy);
-    setEditing(true);
-  }
-
-
   function enableCategoryDropdown(id) {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
@@ -291,15 +242,6 @@ function App() {
     const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
     todoByDateDue.isCategoryEditable = true;
     setTodosByDateDue(todosByDateDueCopy);
-    setEditingCategory(true);
-  }
-
-
-  function enableCategoryDropdownODD(id) {
-    const todosCopy = [...todosDueOnDate];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.isCategoryEditable = true;
-    setTodosDueOnDate(todosCopy);
     setEditingCategory(true);
   }
 
@@ -397,38 +339,6 @@ function App() {
     }
 
 
-
-  function saveTitleODD(id, newTitle) {
-    const todosCopy = [...todosDueOnDate];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.text = newTitle;
-    console.log("New title: ", newTitle);
-    todo.isEditable = false;
-    setTodos(todosCopy);
-    setEditing(false);
-    
-    // Here you would also want to update the backend about the change
-    fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ text: newTitle }), // Send only the updated title
-      }).then(response => { 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
-        return response.json();
-      }).then(data => {
-        console.log('Title updated successfully:', data); 
-      }).catch(error => {
-        console.error('Error updating title:', error);      
-      });  
-
-    }
-
-
   function saveCategory(id, newCategory) {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
@@ -523,37 +433,6 @@ function App() {
     }
 
 
-  function saveCategoryODD(id, newCategory) {
-    const todosCopy = [...todosDueOnDate];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.category = newCategory;
-    console.log("New category: ", newCategory);
-    todo.isCategoryEditable = false;
-    setTodos(todosCopy);
-    setEditingCategory(false);
-    
-    // Here you would also want to update the backend about the change
-    fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ category: newCategory }), // Send only the updated title
-      }).then(response => { 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
-        return response.json();
-      }).then(data => {
-        console.log('Category updated successfully:', data); 
-      }).catch(error => {
-        console.error('Error updating category:', error);      
-      });  
-
-    }
-
-
 
   const loginUser = (user) => {
     const options = {
@@ -594,7 +473,7 @@ function App() {
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
-          <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todosDueOnDate} toggleTodo={toggleTodo} enableEditing={enableEditingODD} enableCategoryDropdown={enableCategoryDropdownODD} saveTitle={saveTitleODD} saveCategory={saveCategoryODD} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+          <Route path="/todos-due-on/:date_due" element={<TodosByDueDate token={token}/>} />
       </Routes>
     </div>
   );
