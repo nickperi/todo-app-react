@@ -1,15 +1,16 @@
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 import { useParams } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import './App.css'
 
 function TodoDetail({todos, isLoggedIn}) {
   const { id } = useParams();
   const todo = todos.find(todo => todo.id === parseInt(id));
 
-  if(!isLoggedIn) {
-    return <Navigate to="/login" />;
-  } 
+  //if(!isLoggedIn) {
+    //return <Navigate to="/login" />;
+  //} 
 
   if(todo.done) {
     return (
