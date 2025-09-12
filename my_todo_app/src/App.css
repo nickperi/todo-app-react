@@ -5,6 +5,25 @@
   text-align: center;
 }
 
+.calendar-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-month, .calendar-weekdays {
+  display: contents;
+}
+
+.date-cell {
+  border: 1px solid;
+  padding: 20px;
+}
+
+.date-cell-clicked {
+  border: 1px solid cyan;
+  padding: 20px;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

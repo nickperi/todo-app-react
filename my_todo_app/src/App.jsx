@@ -10,6 +10,7 @@ import AddTodo from './AddTodo.jsx';
 import TodoDetail from './TodoDetail.jsx';
 import './App.css';
 import TodosByDueDate from './TodosByDueDate.jsx';
+import Calendar from './Calendar.jsx';
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -474,6 +475,7 @@ function App() {
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
           <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+          <Route path="/todos-calendar" element={<Calendar/>} />
       </Routes>
     </div>
   );
