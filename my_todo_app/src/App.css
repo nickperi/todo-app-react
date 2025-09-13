@@ -5,9 +5,18 @@
   text-align: center;
 }
 
+ul, li {
+  text-align: justify;
+}
+
+.badge {
+  border-radius: 37%;
+}
+
 .calendar-container {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
 }
 
 .calendar-month, .calendar-weekdays {
@@ -20,7 +29,7 @@
 }
 
 .date-cell-clicked {
-  border: 1px solid cyan;
+  border: 2px solid blue;
   padding: 20px;
 }
 

@@ -475,7 +475,7 @@ function App() {
           <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
           <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
-          <Route path="/todos-calendar" element={<Calendar/>} />
+          <Route path="/todos-calendar" element={<Calendar token={token}/>} />
       </Routes>
     </div>
   );
