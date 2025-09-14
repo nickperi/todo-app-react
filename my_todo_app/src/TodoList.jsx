@@ -42,6 +42,8 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
                 <option value="date-created">Sort by Date Created</option>
             </select>
 
+            <Link to={"/todos-calendar"}>Go to Calendar</Link>
+
             <h1>Todo List</h1>
             <br/><br/>
     
