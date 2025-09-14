@@ -1,24 +1,15 @@
 import { use } from 'react';
 import {useState} from 'react';
 import {useEffect} from 'react';
-import { Navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import TodoItem from './TodoItem';
+import AddTodo from './AddTodo';
+import { FaPlus } from 'react-icons/fa';
 
 function TodosByDueDate({todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, isEditing, isEditingCategory}) {
     const {date_due} = useParams();
-
     const todosDue = todos.filter(todo => todo.date_due === date_due);
-
-    /*const handleDateChange = (e) => {
-        setDateDue(e.target.value);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        getTodosDueOnDate(dateDue);
-    };*/
 
     function TodoItems({todos}) {
         if(todos.length > 0) {
@@ -33,15 +24,10 @@ function TodosByDueDate({todos, toggleTodo, enableEditing, enableCategoryDropdow
 
     return (
         <>
-            {/*<form onSubmit={handleSubmit}>
-                <label htmlFor="date-input">Enter date</label>
-                <input name="date-input" type="date" placeholder="Enter date" onChange={handleDateChange}></input>
-                <button type="submit">Search</button>
-            </form>*/}
-
             <div>
                <h2>Tasks</h2>
                <TodoItems todos={todosDue}/>
+               <Link id="add-todo-link" to={`/add-todo/${date_due}`}><button className='add-todo'><FaPlus/> Add To-do</button></Link>
              </div>
         </>
     );

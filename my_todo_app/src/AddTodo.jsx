@@ -2,11 +2,13 @@ import {useState} from 'react';
 import {useEffect} from 'react';
 import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const AddTodo = ({addTodo, isLoggedIn}) => {
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('personal');
-    const [dueDate, setDueDate] = useState('');
+    const {date_due} = useParams();
+    const [dueDate, setDueDate] = useState(date_due);
     const [dueTime, setDueTime] = useState('');
     const navigate = useNavigate();
 

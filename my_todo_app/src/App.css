@@ -26,11 +26,19 @@ ul, li {
 .date-cell {
   border: 1px solid;
   padding: 20px;
+  background-color: darkslategray;
 }
 
 .date-cell-clicked {
   border: 2px solid blue;
   padding: 20px;
+  background-color: darkslategray;
+}
+
+.today {
+  background-color: #09d3ac;
+  border-radius: 38%;
+  color: navy;
 }
 
 .logo {

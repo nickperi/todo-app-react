@@ -28,21 +28,18 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
         const handleEdit = (id) => {
             if(!isEditing && !isEditingCategory){
                 enableEditing(id);
-                //setEditing(true);
             }
         };
 
         const handleSave = (id) => {
             if(isEditing) {
                 saveTitle(id, newTitle);
-                //setEditing(false);
             }
         }
 
         const handleCategorySelect = () => {
             if(!isEditingCategory && !isEditing) {
                 enableCategoryDropdown(todo.id);
-                //setEditingCategory(true);
             }
         };
 
@@ -53,7 +50,6 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
 
         const handleCategorySave = () => {
             saveCategory(todo.id, selectedCategory);
-            //setEditingCategory(false);
         };
 
         useEffect(() => {

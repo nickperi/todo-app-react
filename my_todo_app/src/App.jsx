@@ -472,7 +472,7 @@ function App() {
       <Routes>
           <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD} isEditing={isEditing} isEditingCategory={isEditingCategory} isLoggedIn={isLoggedIn} />}/>
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
-          <Route path="/add-todo" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
+          <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
           <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
           <Route path="/todos-calendar" element={<Calendar token={token}/>} />

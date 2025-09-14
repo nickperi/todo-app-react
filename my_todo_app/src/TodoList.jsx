@@ -1,10 +1,3 @@
-import {Link} from 'react-router-dom'
-import { MdCheckBoxOutlineBlank } from "react-icons/md";
-import { MdCheckBox } from "react-icons/md";
-import { FaPlus } from "react-icons/fa";
-import { MdEdit } from "react-icons/md";
-import { GiConfirmed } from "react-icons/gi";
-import { FaInfoCircle } from "react-icons/fa";
 import {useState} from 'react';
 import { Navigate } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
@@ -50,7 +43,6 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
             </select>
 
             <h1>Todo List</h1>
-            <Link id="add-todo-link" to="/add-todo"><button className='add-todo'><FaPlus/> Add To-do</button></Link>
             <br/><br/>
     
             <div style={{ display: "grid", gap: "1rem", maxWidth: "400px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems filter={filter}/></div>

@@ -3,22 +3,21 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import TodosByDueDate from "./TodosByDueDate";
 
 function Calendar ({token}) {
-    const [month, setMonth] = useState(7);
-    const [year, setYear] = useState(2025);
-    const [numDays, setNumDays] = useState(getNumDays(month, year));
-    const [prevNumDays, setPrevNumDays] = useState(getNumDays(month-1, year));
-    const [startDay, setStartDay] = useState(getFirstDay(month));
+    const currentDate = new Date();
+    const [month, setMonth] = useState(currentDate.getMonth());
+    const [year, setYear] = useState(currentDate.getFullYear());
     const [tasks, setTasks] = useState(new Map());
-    const [calendarDays, setCalendarDays] = useState(loadCalendar());
+    const [calendarDays, setCalendarDays] = useState(loadCalendar(month, year, getNumDays(month-1, year), getNumDays(month, year), getFirstDay(month)));
 
     const navigate = useNavigate();
 
-    function getNumDays(month, year) {
-        const months = [
+    const months = [
             'January', 'February', 'March', 'April', 
             'May', 'June', 'July', 'August',
             'September', 'October', 'November', 'December'
-        ];
+    ];
+
+    function getNumDays(month, year) {
 
         if(month === 1 && !isLeapYear(year)) {
             return 28;
@@ -69,14 +68,13 @@ function Calendar ({token}) {
           return response.json();
         })
         .then(data => {
-          //console.log(data);
           setTasks(separateTasksByDate(data));
-          //separateTasksByDate(data);
         })
         .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
       });
-  }, []);
+  }, [month]);
+
 
 
     function separateTasksByDate(tasks) {
@@ -90,12 +88,11 @@ function Calendar ({token}) {
             );
         });
 
-        //console.log(groupedTasks);
         return groupedTasks;
     }
 
 
-    function loadCalendar() {
+    function loadCalendar(month, year, prevNumDays, numDays, startDay) {
         const days = [];
 
         for(let day=(prevNumDays-startDay)+1; day<=prevNumDays; day++) {
@@ -163,7 +160,10 @@ function Calendar ({token}) {
         if(calendarDay.clicked) {
             return (
                 <div className="date-cell-clicked" onClick={() => navigate(`/todos-due-on/${calendarDay.dateDue}`)}>
-                    <span>{calendarDay.day}</span>
+                    {calendarDay.day === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear() ? 
+                        (<span className="today">{calendarDay.day}</span>): 
+                        (<span>{calendarDay.day}</span>)
+                    }
                     <ul>{tasksList}</ul>
                 </div>
             );
@@ -172,7 +172,11 @@ function Calendar ({token}) {
         else {
             return (
                 <div className="date-cell" onClick={() => activateDateCell(calendarDay.dateDue)} onDoubleClick={() => navigate(`/todos-due-on/${calendarDay.dateDue}`)}>
-                    <span>{calendarDay.day}</span>
+                    {calendarDay.day === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear() ? 
+                        (<span className="today">{calendarDay.day}</span>): 
+                        (<span>{calendarDay.day}</span>)
+                    }
+                    
                     <ul>{tasksList}</ul>
                 </div>
             );
@@ -194,9 +198,23 @@ function Calendar ({token}) {
             </div>
     }
 
+    const handleChange = (e) => {
+        const m = parseInt(e.target.value, 10);
+        setMonth(m);
+        setCalendarDays(loadCalendar(m, year, getNumDays(m-1, year), getNumDays(m, year), getFirstDay(m)));
+    };
+
 
 
     return (<>
+            <h1>{months[month]} {year}</h1>
+            <label htmlFor="month-dropdown">Select Month: </label>
+            <select name="month-dropdown" id="month" value={month} onChange={handleChange}>
+                {months.map((month, index) => (
+                    <option value={index}>{month}</option>
+                ))}
+            </select>
+
         <div className="calendar-container">
             <div className="calendar-weekdays">
                 <span>Sun</span>
