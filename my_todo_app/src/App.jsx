@@ -444,7 +444,7 @@ function App() {
       body: JSON.stringify(user)
     };
 
-    fetch('https://projectflaskmvc.onrender.com/api/users', options)
+    fetch('https://projectflaskmvc.onrender.com/api/students', options)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
