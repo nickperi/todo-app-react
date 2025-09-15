@@ -71,13 +71,13 @@ a {
   text-decoration: none;
 }
 
-.add-todo {
+.add-todo, .view-calendar {
   background-color:navy;
   color: cyan;
   border: none;
 }
 
-.add-todo:hover {
+.add-todo:hover, .view-calendar:hover {
   background-color: blue;
 }
 

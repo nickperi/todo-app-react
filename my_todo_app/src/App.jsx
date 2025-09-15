@@ -4,6 +4,7 @@ import {Routes, Route, Router, Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
+import SignUp from './SignUp.jsx';
 import Login from './Login.jsx';
 import TodoList from './TodoList.jsx';
 import AddTodo from './AddTodo.jsx';
@@ -433,6 +434,31 @@ function App() {
 
     }
 
+ const addUser = (user) => {
+    const options = {
+      method: 'POST',
+      headers: 
+      {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    };
+
+    fetch('https://projectflaskmvc.onrender.com/api/users', options)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json(); // Assuming the server responds with JSON
+      })
+      .then(data => {
+        console.log(data);
+        navigate('/login');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+ };
 
 
   const loginUser = (user) => {
@@ -473,6 +499,7 @@ function App() {
           <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD} isEditing={isEditing} isEditingCategory={isEditingCategory} isLoggedIn={isLoggedIn} />}/>
           <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
           <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
+          <Route path="/sign-up" element={<SignUp addUser={addUser} />} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
           <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
           <Route path="/todos-calendar" element={<Calendar token={token}/>} />

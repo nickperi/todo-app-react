@@ -26,8 +26,9 @@ function TodosByDueDate({todos, toggleTodo, enableEditing, enableCategoryDropdow
         <>
             <div>
                <h2>Tasks</h2>
-               <TodoItems todos={todosDue}/>
                <Link id="add-todo-link" to={`/add-todo/${date_due}`}><button className='add-todo'><FaPlus/> Add To-do</button></Link>
+               <br></br>
+               <TodoItems todos={todosDue}/>
              </div>
         </>
     );

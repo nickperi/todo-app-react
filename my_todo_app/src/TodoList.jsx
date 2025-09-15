@@ -1,10 +1,12 @@
 import {useState} from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import TodoItem from './TodoItem';
+import { FaRegCalendarDays } from "react-icons/fa6";
 
 function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, enableEditingDC, enableEditingDD, enableCategoryDropdown, enableCategoryDropdownDC, enableCategoryDropdownDD, saveTitle, saveTitleDC, saveTitleDD, saveCategory, saveCategoryDC, saveCategoryDD, isEditing, isEditingCategory, isLoggedIn}) {
     const [filter, setFilter] = useState('all');
+    const navigate = useNavigate();
 
     function TodoListItems({filter}) {
         
@@ -42,7 +44,8 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
                 <option value="date-created">Sort by Date Created</option>
             </select>
 
-            <Link to={"/todos-calendar"}>Go to Calendar</Link>
+            <br></br><br></br>
+            <button className='view-calendar' onClick={() => navigate('/todos-calendar')}>Go to Calendar <FaRegCalendarDays /></button>
 
             <h1>Todo List</h1>
             <br/><br/>
