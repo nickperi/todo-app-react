@@ -30,10 +30,6 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
         return null;
     }
 
-    if(!isLoggedIn) {
-        return <Navigate to="/login" replace/>;
-    }
-
 
     return (
         <div>

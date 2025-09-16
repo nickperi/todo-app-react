@@ -18,23 +18,25 @@ function App() {
   const [todosByDateCreated, setTodosByDateCreated] = useState([]);
   const [todosByDateDue, setTodosByDateDue] = useState([]);
   const [todosDueOnDate, setTodosDueOnDate] = useState([]);
-  const [students, setStudents] = useState([]);
 
   const [isEditing, setEditing] = useState(false);
   const [isEditingCategory, setEditingCategory] = useState(false);
-
-  const [token, setToken] = useState(sessionStorage.getItem('token') || '');
-  const [isLoggedIn, setIsLoggedIn] = useState(token?true:false);
   const navigate = useNavigate();
 
 
   useEffect(() => {
     fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
-            "Authorization": `Bearer ${token}`}})
+          },
+          credentials: 'include'
+      })
     .then(response => {
       if(!response.ok) {
         throw new Error('Network response was not ok');
+      }
+
+      if(response.status === 401) {
+        navigate('/login');
       }
       return response.json();
     })
@@ -47,7 +49,6 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-      navigate('/login');
     });
   }, []);
 
@@ -58,10 +59,15 @@ function App() {
     
     fetch('https://projectflaskmvc.onrender.com/api/todos/sort-by-date-created', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
-            "Authorization": `Bearer ${token}`}})
+      },  credentials: 'include',
+      })
     .then(response => {
       if(!response.ok) {
         throw new Error('Network response was not ok');
+      }
+
+      if(response.status === 401) {
+        navigate('/login');
       }
       return response.json();
     })
@@ -74,7 +80,6 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-      navigate('/login');
     });
   }, []);
   
@@ -83,10 +88,15 @@ function App() {
 
     fetch('https://projectflaskmvc.onrender.com/api/todos/sort-by-date-due', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
-            "Authorization": `Bearer ${token}`}})
+      }, credentials: 'include',
+    })
     .then(response => {
       if(!response.ok) {
         throw new Error('Network response was not ok');
+      }
+
+      if(response.status === 401) {
+        navigate('/login');
       }
       return response.json();
     })
@@ -104,34 +114,13 @@ function App() {
   }, []);
 
 
-
-  useEffect(() => {
-    fetch('https://projectflaskmvc.onrender.com/api/students')
-    .then(response => {
-      if(!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      setStudents(data);
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
-      navigate('/login');
-    });
-  }, []);
-
-
   const addTodo = (todo) => {
     todo.isEditable = false;
     todo.isCategoryEditable = false;
     const options = {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify(todo) // Convert the JavaScript object to a JSON string
     };
 
@@ -140,7 +129,11 @@ function App() {
         if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.json(); // Assuming the server responds with JSON
+
+        if(response.status === 401) {
+              navigate('/login');
+        }
+        return response.json(); // Assuming the server responds with JSON
         })
         .then(data => {
             console.log(data);
@@ -261,15 +254,17 @@ function App() {
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify({ text: newTitle }), // Send only the updated title
       }).then(response => { 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
+        }   
+        
+        if(response.status === 401) {
+          navigate('/login');
+        }
         return response.json();
       }).then(data => {
         console.log('Title updated successfully:', data); 
@@ -293,15 +288,17 @@ function App() {
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify({ text: newTitle }), // Send only the updated title
       }).then(response => { 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
+        }      
+
+        if(response.status === 401) {
+          navigate('/login');
+        }                 
         return response.json();
       }).then(data => {
         console.log('Title updated successfully:', data); 
@@ -323,15 +320,17 @@ function App() {
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify({ text: newTitle }), // Send only the updated title
       }).then(response => { 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
+        }     
+        
+        if(response.status === 401) {
+          navigate('/login');
+        }
         return response.json();
       }).then(data => {
         console.log('Title updated successfully:', data); 
@@ -353,15 +352,17 @@ function App() {
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify({ category: newCategory }), // Send only the updated title
       }).then(response => { 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
+        }     
+        
+        if(response.status === 401) {
+          navigate('/login');
+        }
         return response.json();
       }).then(data => {
         console.log('Category updated successfully:', data); 
@@ -385,15 +386,17 @@ function App() {
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify({ category: newCategory }), // Send only the updated title
       }).then(response => { 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
+        }     
+        
+        if(response.status === 401) {
+          navigate('/login');
+        }
         return response.json();
       }).then(data => {
         console.log('Category updated successfully:', data); 
@@ -416,15 +419,17 @@ function App() {
     // Here you would also want to update the backend about the change
     fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
         body: JSON.stringify({ category: newCategory }), // Send only the updated title
       }).then(response => { 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }                       
+        }      
+        
+        if(response.status === 401) {
+          navigate('/login');
+        }
         return response.json();
       }).then(data => {
         console.log('Category updated successfully:', data); 
@@ -467,6 +472,7 @@ function App() {
         headers: {
             'Content-Type': 'application/json' // Crucial for indicating JSON content
         },
+        credentials: 'include',
         body: JSON.stringify(user) // Convert the JavaScript object to a JSON string
     };
 
@@ -478,10 +484,6 @@ function App() {
             return response.json(); // Assuming the server responds with JSON
         })
         .then(data => {
-            console.log(data);
-            sessionStorage.setItem('token', data.access_token);
-            setToken(data.access_token);
-            setIsLoggedIn(true);
             navigate('/');
             window.location.reload();
         })
@@ -496,13 +498,13 @@ function App() {
     <div>
       
       <Routes>
-          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD} isEditing={isEditing} isEditingCategory={isEditingCategory} isLoggedIn={isLoggedIn} />}/>
-          <Route path="/todos/:id" element={<TodoDetail todos={todos} isLoggedIn={isLoggedIn}/>} />
-          <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo} isLoggedIn={isLoggedIn}/>} />
+          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
+          <Route path="/todos/:id" element={<TodoDetail todos={todos}/>} />
+          <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo}/>} />
           <Route path="/sign-up" element={<SignUp addUser={addUser} />} />
           <Route path="/login" element={<Login loginUser={loginUser} />} />
           <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
-          <Route path="/todos-calendar" element={<Calendar token={token}/>} />
+          <Route path="/todos-calendar" element={<Calendar/>} />
       </Routes>
     </div>
   );

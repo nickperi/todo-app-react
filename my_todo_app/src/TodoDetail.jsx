@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 import './App.css'
 
-function TodoDetail({todos, isLoggedIn}) {
+function TodoDetail({todos}) {
   const { id } = useParams();
   const todo = todos.find(todo => todo.id === parseInt(id));
 

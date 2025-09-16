@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import TodosByDueDate from "./TodosByDueDate";
 
-function Calendar ({token}) {
+function Calendar ({}) {
     const currentDate = new Date();
     const [month, setMonth] = useState(currentDate.getMonth());
     const [year, setYear] = useState(currentDate.getFullYear());
@@ -59,8 +59,9 @@ function Calendar ({token}) {
  useEffect(() => {
    fetch(`https://projectflaskmvc.onrender.com/todos/${year}/${month+1}`, {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
-            "Authorization": `Bearer ${token}`}}
-          )
+        },
+        credentials: 'include',
+    })
           .then(response => {
           if(!response.ok) {
             throw new Error('Network response was not ok');
@@ -72,6 +73,7 @@ function Calendar ({token}) {
         })
         .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
+        navigate('/login');
       });
   }, [month]);
 
