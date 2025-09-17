@@ -53,7 +53,7 @@ function CustomTodoList({fetchTodos, todos, toggleTodo, enableEditing, enableCat
             <select name='status-filter' value={statusFilter} onChange={(e) => setStatus(e.target.value)}>
                 <option value="completed">Completed</option>
                 <option value="incomplete">Incomplete</option>
-                <option value="pending">Pending</option>
+                <option value="overdue">Overdue</option>
             </select>
 
             <br></br><br></br>
