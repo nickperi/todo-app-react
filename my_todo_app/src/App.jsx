@@ -12,12 +12,14 @@ import TodoDetail from './TodoDetail.jsx';
 import './App.css';
 import TodosByDueDate from './TodosByDueDate.jsx';
 import Calendar from './Calendar.jsx';
+import CustomTodoList from './CustomTodoList.jsx';
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [todosByDateCreated, setTodosByDateCreated] = useState([]);
   const [todosByDateDue, setTodosByDateDue] = useState([]);
   const [todosDueOnDate, setTodosDueOnDate] = useState([]);
+  const [customTodos, setCustomTodos] = useState([]);
 
   const [isEditing, setEditing] = useState(false);
   const [isEditingCategory, setEditingCategory] = useState(false);
@@ -32,7 +34,6 @@ function App() {
       })
     .then(response => {
       if(!response.ok) {
-        console.log(response);
         throw new Error('Network response was not ok');
       }
 
@@ -113,6 +114,35 @@ function App() {
       navigate('/login');
     });
   }, []);
+
+  const fetchTodos = (url) => {
+      fetch(url, {headers: {
+            'Content-Type': 'application/json', // Crucial for indicating JSON content
+      }, credentials: 'include',
+    })
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      if(response.status === 401) {
+        navigate('/login');
+      }
+      return response.json();
+    })
+    .then(data => {
+      data.forEach(todo => {
+        todo.isEditable = false;
+        todo.isCategoryEditable = false;
+      });
+      //console.log('data: ' + data);
+      setCustomTodos(data);
+    })
+    .catch(error => {
+      console.error('There was a problem with the fetch operation:', error);
+      navigate('/login');
+    });
+  }
 
 
   const addTodo = (todo) => {
@@ -506,6 +536,7 @@ function App() {
           <Route path="/login" element={<Login loginUser={loginUser} />} />
           <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
           <Route path="/todos-calendar" element={<Calendar/>} />
+          <Route path="/custom-todos" element={<CustomTodoList fetchTodos={fetchTodos} todos={customTodos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
       </Routes>
     </div>
   );
