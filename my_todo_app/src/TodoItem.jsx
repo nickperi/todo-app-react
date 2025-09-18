@@ -160,7 +160,7 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                         } <br></br>
 
                          {todo.date_due ?
-                            (<span>Due on {todo.date_time_due}</span>) :
+                            (<span>Due on {todo.date_due}</span>) :
                             (<></>)
                         }<br></br>
                         
