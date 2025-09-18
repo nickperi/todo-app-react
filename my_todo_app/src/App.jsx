@@ -135,7 +135,6 @@ function App() {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
       });
-      //console.log('data: ' + data);
       setCustomTodos(data);
     })
     .catch(error => {
