@@ -102,7 +102,17 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                                 <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span> &nbsp;&nbsp;
                                  <button title='Edit category' className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button>
                             </div>)
-                            } 
+                            } <br></br>
+
+                        {todo.date_created ?
+                            (<span>Created on {todo.date_created}</span>) :
+                            (<></>)
+                        } <br></br>
+
+                         {todo.date_completed ?
+                            (<span>Completed on {todo.date_completed}</span>) :
+                            (<></>)
+                        } <br></br>
 
                         <Link title='View task' to={`/todos/${todo.id}`}><FaInfoCircle/></Link>
                     </div> :
@@ -142,8 +152,18 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                                 <span>{options[options.findIndex(option => option.value===selectedCategory)].label}</span> &nbsp;&nbsp;
                                 <button title='Edit category' className='edit-category' onClick={() => handleCategorySelect()}><MdEdit/></button>
                             </div>)
-                        }
+                        } <br></br>
 
+                        {todo.date_created ?
+                            (<span>Created on {todo.date_created}</span>) :
+                            (<></>)
+                        } <br></br>
+
+                         {todo.date_due ?
+                            (<span>Due on {todo.date_time_due}</span>) :
+                            (<></>)
+                        }<br></br>
+                        
                         <Link title='View task' to={`/todos/${todo.id}`}><FaInfoCircle/></Link>
 
                     </div>} 
