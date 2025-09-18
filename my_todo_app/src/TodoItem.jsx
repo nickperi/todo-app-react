@@ -105,7 +105,7 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                             } <br></br>
 
                         {todo.date_created ?
-                            (<span>Created on {todo.date_created}</span>) :
+                            (<span>Created on {todo.create_date}</span>) :
                             (<></>)
                         } <br></br>
 
@@ -155,7 +155,7 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                         } <br></br>
 
                         {todo.date_created ?
-                            (<span>Created on {todo.date_created}</span>) :
+                            (<span>Created on {todo.create_date}</span>) :
                             (<></>)
                         } <br></br>
 

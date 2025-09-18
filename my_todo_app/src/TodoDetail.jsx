@@ -27,7 +27,8 @@ function TodoDetail({todos}) {
       <h3>User: {todo.user_id}</h3>
       <h3>Category: {todo.category}</h3>
       <h3>Done: {todo.done?"Yes":"No"}</h3>
-      <h3>Date Due: {todo.date_due} {todo.time_due}</h3>
+      <h3>Date Created: {todo.date_created}</h3>
+      <h3>Date Due: {todo.date_time_due}</h3>
       <h3>Date Completed: {todo.date_completed}</h3>
     </div>
   );
@@ -46,6 +47,7 @@ function TodoDetail({todos}) {
       <h3>User: {todo.user_id}</h3>
       <h3>Category: {todo.category}</h3>
       <h3>Done: {todo.done?"Yes":"No"}</h3>
+      <h3>Date Created: {todo.date_created}</h3>
       <h3>Date Due: {todo.date_due} {todo.time_due}</h3>
     </div>
   );
