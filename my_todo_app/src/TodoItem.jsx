@@ -4,11 +4,11 @@ import { useEffect } from "react";
 import { MdCheckBoxOutlineBlank } from "react-icons/md";
 import { MdCheckBox } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
-import { GiConfirmed } from "react-icons/gi";
+import { GiCancel, GiConfirmed } from "react-icons/gi";
 import { FaInfoCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, isEditing, isEditingCategory}) {
+function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, disableEditing, disableCategoryDropdown, isEditing, isEditingCategory}) {
         const itemRef = useRef(null);
         const [newTitle, setTitle] = useState(todo.text);
         const [selectedCategory, setCategory] = useState(todo.category);
@@ -78,10 +78,16 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
 
                         <div>
                             <button className='added' onClick={() => toggleTodo(todo.id)}><MdCheckBox/></button> &nbsp;&nbsp;
-                            <h2 style={{display:'inline-block'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent)}}>{todo.text}</h2> &nbsp;&nbsp;
+                            <h2 style={{display:'inline-block'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent);}}>{todo.text}</h2> &nbsp;&nbsp;
 
                             {todo.isEditable ? 
-                                (<button title='Save task title' className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button>) : 
+                                (
+                                <>
+                                    <button title='Save task title' className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button>
+                                    &nbsp;&nbsp;
+                                    <button title='Cancel' className='cancel' onClick = {() => disableEditing(todo.id)}><GiCancel/></button>
+                                </>
+                            ) : 
                                 (<button title='Edit task title' className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button>)
                             }
                         </div>
@@ -95,6 +101,8 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                                     ))}
                                 </select> &nbsp;&nbsp;
                                 <button title='Save category' className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button>
+                                  &nbsp;&nbsp;
+                                <button title='Cancel' className='cancel' onClick = {() => disableCategoryDropdown(todo.id)}><GiCancel/></button>
                             </div>) :
 
                             (<div>
@@ -127,10 +135,14 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                     }}>
                         <div>
                             <button className='removed' onClick={() => toggleTodo(todo.id)}><MdCheckBoxOutlineBlank /></button>&nbsp;&nbsp;
-                            <h2 style={{display:'inline-block'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent)}}>{todo.text}</h2>&nbsp;&nbsp;
+                            <h2 style={{display:'inline-block'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {setTitle(e.currentTarget.textContent);}}>{todo.text}</h2>&nbsp;&nbsp;
 
                             {todo.isEditable ? 
-                                (<button title='Save task title' className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button>) : 
+                                (<>
+                                    <button title='Save task title' className='confirm' onClick = {() => handleSave(todo.id)}><GiConfirmed/></button>
+                                    &nbsp;&nbsp;
+                                    <button title='Cancel' className='cancel' onClick = {() => disableEditing(todo.id)}><GiCancel/></button>
+                                </>) : 
                                 (<button title='Edit task title' className='edit' onClick = {() => handleEdit(todo.id)}><MdEdit/></button>)
                             }
                         </div>
@@ -145,6 +157,8 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
                                     ))}
                                 </select> &nbsp;&nbsp;
                                 <button title='Save category' className='confirm-category' onClick={() => handleCategorySave()}><GiConfirmed/></button>
+                                &nbsp;&nbsp;
+                                <button title='Cancel' className='cancel' onClick = {() => disableCategoryDropdown(todo.id)}><GiCancel/></button>
                             </div>) :
 
                             (<div>

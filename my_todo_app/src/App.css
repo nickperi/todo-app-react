@@ -97,6 +97,14 @@ a {
     padding: 0%;
 }
 
+.cancel {
+  background-color: transparent;
+  color: red;
+  border: none;
+  font-size: large;
+  padding: 0%;
+}
+
 .edit {
   background-color: transparent;
   color: orangered;

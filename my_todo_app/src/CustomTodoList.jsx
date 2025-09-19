@@ -4,18 +4,22 @@ import { useRef, useEffect } from 'react';
 import TodoItem from './TodoItem';
 import { FaRegCalendarDays } from "react-icons/fa6";
 
-function CustomTodoList({fetchTodos, todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, isEditing, isEditingCategory, }) {
-    const [sort, setSort] = useState('');
-    const [categoryFilter, setCategory] = useState('');
-    const [dateDue, setDateDue] = useState('');
-    const [statusFilter, setStatus] = useState('');
+function CustomTodoList({fetchTodos, todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, disableEditing, disableCategoryDropdown, isEditing, isEditingCategory, }) {
+    const [sort, setSort] = useState(localStorage.getItem('sort') || '');
+    const [categoryFilter, setCategory] = useState(localStorage.getItem('categoryFilter') || '');
+    const [dateDue, setDateDue] = useState(localStorage.getItem('dateDue') || '');
+    const [statusFilter, setStatus] = useState(localStorage.getItem('statusFilter') || '');
     const navigate = useNavigate();
 
     function TodoListItems({todos}) {
         return todos.map(todo => {
-            return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
+            return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
         });
     }
+
+    useEffect(() => {
+        handleApply();
+    }, [sort, categoryFilter, dateDue, statusFilter]);
 
     const handleApply = () => {
         let url;
@@ -91,17 +95,17 @@ function CustomTodoList({fetchTodos, todos, toggleTodo, enableEditing, enableCat
     return (
         <div>
             <label htmlFor="sort">Sort Todos by: </label>
-            <select name="sort" id="sort" value={sort} onChange={(e) => setSort(e.target.value)}>
+            <select name="sort" id="sort" value={sort} onChange={(e) => {setSort(e.target.value); localStorage.setItem('sort', e.target.value); }}>
                 <option value="">Select</option>
                 <option value="date-due">Date Due</option>
                 <option value="date-created">Date Created</option>
             </select>
 
             <label htmlFor="date-filter">Select Date Due: </label>
-            <input name='date-filter' type="date" value={dateDue} onChange={(e) => setDateDue(e.target.value)}></input>
+            <input name='date-filter' type="date" value={dateDue} onChange={(e) => {setDateDue(e.target.value); localStorage.setItem('dateDue', e.target.value);}}></input>
 
             <label htmlFor="category-filter">Select Category: </label>
-            <select name="category-filter" value={categoryFilter} onChange={(e) => setCategory(e.target.value)}>
+            <select name="category-filter" value={categoryFilter} onChange={(e) => {setCategory(e.target.value); localStorage.setItem('categoryFilter', e.target.value); }}>
                 <option value="">Any</option>
                 <option value="job application">Job Application</option>
                 <option value="work">Work</option>
@@ -113,7 +117,7 @@ function CustomTodoList({fetchTodos, todos, toggleTodo, enableEditing, enableCat
             </select>
 
             <label htmlFor="status-filter">Select status: </label>
-            <select name='status-filter' value={statusFilter} onChange={(e) => setStatus(e.target.value)}>
+            <select name='status-filter' value={statusFilter} onChange={(e) => {setStatus(e.target.value); localStorage.setItem('statusFilter', e.target.value); }}>
                 <option value="">Any</option>
                 <option value="completed">Completed</option>
                 <option value="incomplete">Incomplete</option>

@@ -3,10 +3,10 @@ import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import TodoItem from './TodoItem';
 import { FaRegCalendarDays } from "react-icons/fa6";
-import { FaSortAlphaDown } from "react-icons/fa";
+import { FaPlus, FaSortAlphaDown } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa";
 
-function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, enableEditingDC, enableEditingDD, enableCategoryDropdown, enableCategoryDropdownDC, enableCategoryDropdownDD, saveTitle, saveTitleDC, saveTitleDD, saveCategory, saveCategoryDC, saveCategoryDD, isEditing, isEditingCategory, isLoggedIn}) {
+function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, enableEditingDC, enableEditingDD, enableCategoryDropdown, enableCategoryDropdownDC, enableCategoryDropdownDD, saveTitle, saveTitleDC, saveTitleDD, saveCategory, saveCategoryDC, saveCategoryDD, disableEditing, disableEditingDC, disableEditingDD, disableCategoryDropdown, disableCategoryDropdownDC, disableCategoryDropdownDD, isEditing, isEditingCategory}) {
     const [filter, setFilter] = useState('all');
     const navigate = useNavigate();
 
@@ -14,19 +14,19 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
         
         if(filter === 'date-due') {
             return todosByDateDue.map(todo => {
-               return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditingDD} enableCategoryDropdown={enableCategoryDropdownDD} saveTitle={saveTitleDD} saveCategory={saveCategoryDD} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
+               return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditingDD} enableCategoryDropdown={enableCategoryDropdownDD} saveTitle={saveTitleDD} saveCategory={saveCategoryDD} disableEditing={disableEditingDD} disableCategoryDropdown={disableCategoryDropdownDD} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
             });
         }
 
         if(filter === 'date-created') {
             return todosByDateCreated.map(todo => {
-                return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditingDC} enableCategoryDropdown={enableCategoryDropdownDC} saveTitle={saveTitleDC} saveCategory={saveCategoryDC} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
+                return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditingDC} enableCategoryDropdown={enableCategoryDropdownDC} saveTitle={saveTitleDC} saveCategory={saveCategoryDC} disableEditing={disableEditingDC} disableCategoryDropdown={disableCategoryDropdownDC} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
             });
         }
 
         if(filter === 'all') {
             return todos.map(todo => {
-                return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
+                return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
         });
         }
         return null;
@@ -43,6 +43,7 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
             </select>
 
             <br></br><br></br>
+            <button className='add-todo' onClick={() => navigate('/add-todo')}>Add To-do <FaPlus /></button>
             <button className='view-calendar' onClick={() => navigate('/todos-calendar')}>Go to Calendar <FaRegCalendarDays /></button>
             <button className='view-calendar' onClick={() => navigate('/custom-todos')}>Sort & Filter Todos <FaSortAlphaDown /> <FaFilter/></button>
 

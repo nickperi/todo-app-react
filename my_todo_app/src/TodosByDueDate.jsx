@@ -7,14 +7,14 @@ import TodoItem from './TodoItem';
 import AddTodo from './AddTodo';
 import { FaPlus } from 'react-icons/fa';
 
-function TodosByDueDate({todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, isEditing, isEditingCategory}) {
+function TodosByDueDate({todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, disableEditing, disableCategoryDropdown, isEditing, isEditingCategory}) {
     const {date_due} = useParams();
     const todosDue = todos.filter(todo => todo.date_due === date_due);
 
     function TodoItems({todos}) {
         if(todos.length > 0) {
             return todos.map(todo => {
-                return <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} isEditing={isEditing} isEditingCategory={isEditingCategory}/>
+                return <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>
             });
         }
         else {
