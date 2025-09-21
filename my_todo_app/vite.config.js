@@ -8,7 +8,7 @@ export default defineConfig({
 
         VitePWA({
           registerType: 'autoUpdate',
-          includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'], // Cache static assets
+          includeAssets: ['assets/react.svg'], // Cache static assets
           manifest: {
             name: 'My React PWA',
             short_name: 'ReactPWA',
@@ -24,6 +24,24 @@ export default defineConfig({
           },
           workbox: {
             globPatterns: ['**/*.{js,css,html,ico,png,svg,vue,ts}'], // Cache all imports
+            navigateFallback: '/index.html', // IMPORTANT for offline refresh
+
+            runtimeCaching: [
+              {
+                urlPattern: ({ url }) => url.origin === 'https://projectflaskmvc.onrender.com/api/todos', // Replace with your API origin
+                handler: 'CacheFirst', // Cache strategy: try cache first, then network
+                options: {
+                  cacheName: 'api-cache',
+                  expiration: {
+                    maxEntries: 10,
+                    maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+                  },
+                  cacheableResponse: {
+                    statuses: [0, 200],
+                  },
+                },
+              },
+            ],
           },
         }),
   ],

@@ -27,7 +27,8 @@ function App() {
 
 
   useEffect(() => {
-    fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
+
+      fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
           },
           credentials: 'include'
@@ -46,13 +47,111 @@ function App() {
       data.forEach(todo => {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
+        todo.syncStatus = 'synced';
       });
       setTodos(data);
+      saveData('myDatabase', 'todos', data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
     });
+
+
+    if(!navigator.online) {
+      getData("myDatabase", "todos")
+      .then((data) => {
+          console.log("Retrieved data:", data);
+          setTodos(data[0]);
+        });
+    }
   }, []);
+
+
+
+  async function saveData(dbName, storeName, data, key=null) {
+    return new Promise( (resolve, reject) => {
+
+      const request = indexedDB.open(dbName, 2);
+
+      request.onerror = (e) => {
+        reject(`Database error: ${e.target.errorCode}`);
+      };
+
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+
+        if(!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName, {keyPath:'id', autoIncrement:true});
+        }
+      };
+
+      request.onsuccess = (e) => {
+        const db = e.target.result;
+        const transaction = db.transaction([storeName], 'readwrite');
+
+        transaction.onerror = (e) => {
+          reject(`Transaction error: ${e.target.errorCode}`);
+        };
+
+        transaction.oncomplete = () => {
+          resolve('Data saved successfully!');
+        };
+
+        const objectStore = transaction.objectStore(storeName);
+
+        const putRequest = key ? objectStore.put(data, key) : objectStore.put(data);
+
+        putRequest.onerror = (e) => {
+           reject(`Error saving data: ${e.target.errorCode}`);
+        };
+
+        putRequest.onsuccess = () => {
+          // Data successfully added to the object store
+        };
+
+      };
+    });
+  }
+
+
+function getData(dbName, storeName) {
+  return new Promise((resolve, reject) => {
+    // Open the database
+    const request = indexedDB.open(dbName);
+
+    request.onerror = (event) => {
+      reject("Error opening database: " + event.target.errorCode);
+    };
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+
+      // Start a read-only transaction
+      const transaction = db.transaction([storeName], "readonly");
+      const objectStore = transaction.objectStore(storeName);
+
+      // Request all data from the object store
+      const getAllRequest = objectStore.getAll();
+
+      getAllRequest.onerror = (event) => {
+        reject("Error retrieving data: " + event.target.errorCode);
+      };
+
+      getAllRequest.onsuccess = (event) => {
+        resolve(event.target.result); // Resolve with the retrieved data
+      };
+
+      // Handle transaction completion (optional, but good practice)
+      transaction.oncomplete = () => {
+        db.close(); // Close the database connection
+      };
+
+      transaction.onabort = () => {
+        reject("Transaction aborted.");
+      };
+    };
+  });
+}
 
 
 
@@ -77,8 +176,10 @@ function App() {
       data.forEach(todo => {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
+        todo.syncStatus = 'synced';
       });
       setTodosByDateCreated(data);
+      //saveData('myDatabase', 'todos_by_date_created', data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
@@ -106,12 +207,13 @@ function App() {
       data.forEach(todo => {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
+        todo.syncStatus = 'synced';
       });
       setTodosByDateDue(data);
+      //saveData('myDatabase', 'todos_by_date_due', data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-      navigate('/login');
     });
   }, []);
 
@@ -138,12 +240,13 @@ function App() {
       data.forEach(todo => {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
+        todo.syncStatus = 'synced';
       });
       setCustomTodos(data);
+      saveData('myDatabase', 'custom_todos', data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-      navigate('/login');
     });
   }
 
@@ -151,6 +254,7 @@ function App() {
   const addTodo = (todo) => {
     todo.isEditable = false;
     todo.isCategoryEditable = false;
+    todo.syncStatus = 'added';
     const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json',},
@@ -187,6 +291,7 @@ function App() {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
     todo.done = !todo.done;
+    todo.syncStatus = 'toggled';
     setTodos(todosCopy);
     setTodosByDateCreated(todosCopy);
     setTodosByDateDue(todosCopy);
@@ -426,6 +531,7 @@ function App() {
     todo.text = newTitle;
     console.log("New title: ", newTitle);
     todo.isEditable = false;
+    todo.syncStatus = 'updated-title';
     setTodos(todosCopy);
     setEditing(false);
     
@@ -441,6 +547,7 @@ function App() {
     todoByDateCreated.text = newTitle;
     console.log("New title: ", newTitle);
     todoByDateCreated.isEditable = false;
+    todoByDateCreated.syncStatus = 'updated-title';
     setTodosByDateCreated(todosByDateCreatedCopy);
     setEditing(false);
     
@@ -455,6 +562,7 @@ function App() {
     todoByDateDue.text = newTitle;
     console.log("New title: ", newTitle);
     todoByDateDue.isEditable = false;
+    todoByDateDue.syncStatus = 'updated-title';
     setTodosByDateDue(todosByDateDueCopy);
     setEditing(false);
     
@@ -467,6 +575,7 @@ function App() {
     const todosCopy = [...customTodos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
     todo.text = newTitle;
+    todo.syncStatus = 'updated-title';
     console.log("New title: ", newTitle);
     todo.isEditable = false;
     setCustomTodos(todosCopy);
@@ -483,6 +592,7 @@ function App() {
     todo.category = newCategory;
     console.log("New category: ", newCategory);
     todo.isCategoryEditable = false;
+    todo.syncStatus = 'updated-category';
     setTodos(todosCopy);
     setEditingCategory(false);
     
@@ -498,6 +608,7 @@ function App() {
     todoByDateCreated.category = newCategory;
     console.log("New category: ", newCategory);
     todoByDateCreated.isCategoryEditable = false;
+    todoByDateCreated.syncStatus = 'updated-category';
     setTodosByDateCreated(todosByDateCreatedCopy);
     setEditingCategory(false);
     
@@ -512,6 +623,7 @@ function App() {
     todoByDateDue.category = newCategory;
     console.log("New category: ", newCategory);
     todoByDateDue.isCategoryEditable = false;
+    todoByDateDue.syncStatus = 'updated-category';
     setTodosByDateDue(todosByDateDueCopy);
     setEditingCategory(false);
     
@@ -526,6 +638,7 @@ function App() {
     todo.category = newCategory;
     console.log("New category: ", newCategory);
     todo.isCategoryEditable = false;
+    todo.syncStatus = 'updated-category';
     setCustomTodos(todosCopy);
     setEditingCategory(false);
     
