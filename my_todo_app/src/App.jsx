@@ -35,12 +35,10 @@ function App() {
       })
     .then(response => {
       if(!response.ok) {
-        throw new Error('Network response was not ok');
+        navigate('/login');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      if(response.status === 401) {
-        navigate('/login');
-      }
       return response.json();
     })
     .then(data => {
@@ -50,28 +48,20 @@ function App() {
         todo.syncStatus = 'synced';
       });
       setTodos(data);
-      saveData('myDatabase', 'todos', data);
+      //saveData('myDatabase', 'todos', data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      //navigate('/login');
     });
-
-
-    if(!navigator.online) {
-      getData("myDatabase", "todos")
-      .then((data) => {
-          console.log("Retrieved data:", data);
-          setTodos(data[0]);
-        });
-    }
   }, []);
 
 
 
-  async function saveData(dbName, storeName, data, key=null) {
+  async function saveData(dbName, storeName, data, key) {
     return new Promise( (resolve, reject) => {
 
-      const request = indexedDB.open(dbName, 2);
+      const request = indexedDB.open(dbName, 3);
 
       request.onerror = (e) => {
         reject(`Database error: ${e.target.errorCode}`);
@@ -81,7 +71,7 @@ function App() {
         const db = e.target.result;
 
         if(!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName, {keyPath:'id', autoIncrement:true});
+          db.createObjectStore(storeName);
         }
       };
 
@@ -99,7 +89,7 @@ function App() {
 
         const objectStore = transaction.objectStore(storeName);
 
-        const putRequest = key ? objectStore.put(data, key) : objectStore.put(data);
+        const putRequest = objectStore.put(data, key);
 
         putRequest.onerror = (e) => {
            reject(`Error saving data: ${e.target.errorCode}`);
@@ -164,12 +154,10 @@ function getData(dbName, storeName) {
       })
     .then(response => {
       if(!response.ok) {
-        throw new Error('Network response was not ok');
+       navigate('/login');
+       throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      if(response.status === 401) {
-        navigate('/login');
-      }
       return response.json();
     })
     .then(data => {
@@ -183,6 +171,7 @@ function getData(dbName, storeName) {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      //navigate('/login');
     });
   }, []);
   
@@ -195,11 +184,8 @@ function getData(dbName, storeName) {
     })
     .then(response => {
       if(!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      if(response.status === 401) {
         navigate('/login');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
@@ -214,6 +200,7 @@ function getData(dbName, storeName) {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      //navigate('/login');
     });
   }, []);
 
@@ -228,11 +215,8 @@ function getData(dbName, storeName) {
     })
     .then(response => {
       if(!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      if(response.status === 401) {
         navigate('/login');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
@@ -242,12 +226,23 @@ function getData(dbName, storeName) {
         todo.isCategoryEditable = false;
         todo.syncStatus = 'synced';
       });
+      saveData('myDatabase', 'todos', data, 1);
       setCustomTodos(data);
-      saveData('myDatabase', 'custom_todos', data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
+      if(navigator.onLine) {
+        navigate('/login');
+      }
     });
+
+    if(!navigator.online) {
+      getData("myDatabase", "todos")
+      .then((data) => {
+          console.log("Retrieved data:", data);
+          setCustomTodos(data[0]);
+        });
+    }
   }
 
 
@@ -296,6 +291,7 @@ function getData(dbName, storeName) {
     setTodosByDateCreated(todosCopy);
     setTodosByDateDue(todosCopy);
     setTodosDueOnDate(todosCopy);
+    setCustomTodos(todosCopy);
 
     // Here you would also want to update the backend about the change
     const options = {
@@ -707,15 +703,15 @@ function getData(dbName, storeName) {
     <div>
       
       <Routes>
-          <Route path="/" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD}  disableEditing={disableEditing} disableEditingDC={disableEditingDC} disableEditingDD={disableEditingDD} disableCategoryDropdown={disableCategoryDropdown} disableCategoryDropdownDC={disableCategoryDropdownDC} disableCategoryDropdownDD={disableCategoryDropdownDD} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
-          <Route path="/todos/:id" element={<TodoDetail todos={todos}/>} />
-          <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo}/>} />
-          <Route path="/add-todo" element={<AddTodo addTodo={addTodo}/>} />
-          <Route path="/sign-up" element={<SignUp addUser={addUser} />} />
-          <Route path="/login" element={<Login loginUser={loginUser} />} />
-          <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
-          <Route path="/todos-calendar" element={<Calendar/>} />
-          <Route path="/custom-todos" element={<CustomTodoList fetchTodos={fetchTodos} todos={customTodos} toggleTodo={toggleTodo} enableEditing={enableEditingF} enableCategoryDropdown={enableCategoryDropdownF} saveTitle={saveTitleF} saveCategory={saveCategoryF} disableEditing={disableEditingF} disableCategoryDropdown={disableCategoryDropdownF} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+        <Route path="/" element={<CustomTodoList fetchTodos={fetchTodos} todos={customTodos} toggleTodo={toggleTodo} enableEditing={enableEditingF} enableCategoryDropdown={enableCategoryDropdownF} saveTitle={saveTitleF} saveCategory={saveCategoryF} disableEditing={disableEditingF} disableCategoryDropdown={disableCategoryDropdownF} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+        <Route path="/todos" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD}  disableEditing={disableEditing} disableEditingDC={disableEditingDC} disableEditingDD={disableEditingDD} disableCategoryDropdown={disableCategoryDropdown} disableCategoryDropdownDC={disableCategoryDropdownDC} disableCategoryDropdownDD={disableCategoryDropdownDD} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
+        <Route path="/todos/:id" element={<TodoDetail todos={todos}/>} />
+        <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo}/>} />
+        <Route path="/add-todo" element={<AddTodo addTodo={addTodo}/>} />
+        <Route path="/sign-up" element={<SignUp addUser={addUser} />} />
+        <Route path="/login" element={<Login loginUser={loginUser} />} />
+        <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+        <Route path="/todos-calendar" element={<Calendar/>} />
       </Routes>
     </div>
   );
