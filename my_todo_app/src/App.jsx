@@ -48,8 +48,8 @@ function App() {
         todo.syncStatus = 'synced';
       });
 
+      setTodos(data);
       if(navigator.online) {
-        setTodos(data);
         saveData('myDatabase', 'todos', data, 1); 
       }
     })
