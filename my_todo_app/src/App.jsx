@@ -42,19 +42,32 @@ function App() {
       return response.json();
     })
     .then(data => {
-      data.forEach(todo => {
+      data.map(todo => {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
         todo.syncStatus = 'synced';
       });
-      setTodos(data);
-      //saveData('myDatabase', 'todos', data);
+
+      if(navigator.online) {
+        setTodos(data);
+        saveData('myDatabase', 'todos', data, 1); 
+      }
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-      //navigate('/login');
+
+      if(navigator.online)
+        navigate('/login');
     });
-  }, []);
+
+    if(!navigator.online) {
+      getData("myDatabase", "todos")
+      .then((data) => {
+          console.log("Retrieved data:", data);
+          setTodos(data[0]);
+        });
+    }
+  }, [todos]);
 
 
 
@@ -145,107 +158,6 @@ function getData(dbName, storeName) {
 
 
 
-
-  useEffect(() => {
-    
-    fetch('https://projectflaskmvc.onrender.com/api/todos/sort-by-date-created', {headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-      },  credentials: 'include',
-      })
-    .then(response => {
-      if(!response.ok) {
-       navigate('/login');
-       throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return response.json();
-    })
-    .then(data => {
-      data.forEach(todo => {
-        todo.isEditable = false;
-        todo.isCategoryEditable = false;
-        todo.syncStatus = 'synced';
-      });
-      setTodosByDateCreated(data);
-      //saveData('myDatabase', 'todos_by_date_created', data);
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
-      //navigate('/login');
-    });
-  }, []);
-  
-  
-  useEffect(() => {
-
-    fetch('https://projectflaskmvc.onrender.com/api/todos/sort-by-date-due', {headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-      }, credentials: 'include',
-    })
-    .then(response => {
-      if(!response.ok) {
-        navigate('/login');
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      data.forEach(todo => {
-        todo.isEditable = false;
-        todo.isCategoryEditable = false;
-        todo.syncStatus = 'synced';
-      });
-      setTodosByDateDue(data);
-      //saveData('myDatabase', 'todos_by_date_due', data);
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
-      //navigate('/login');
-    });
-  }, []);
-
-
-  const fetchTodos = (url) => {
-
-    setEditing(false);
-    setEditingCategory(false);
-    fetch(url, {headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-      }, credentials: 'include',
-    })
-    .then(response => {
-      if(!response.ok) {
-        navigate('/login');
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      data.forEach(todo => {
-        todo.isEditable = false;
-        todo.isCategoryEditable = false;
-        todo.syncStatus = 'synced';
-      });
-      saveData('myDatabase', 'todos', data, 1);
-      setCustomTodos(data);
-    })
-    .catch(error => {
-      console.error('There was a problem with the fetch operation:', error);
-      if(navigator.onLine) {
-        navigate('/login');
-      }
-    });
-
-    if(!navigator.online) {
-      getData("myDatabase", "todos")
-      .then((data) => {
-          console.log("Retrieved data:", data);
-          setCustomTodos(data[0]);
-        });
-    }
-  }
-
-
   const addTodo = (todo) => {
     todo.isEditable = false;
     todo.isCategoryEditable = false;
@@ -331,70 +243,11 @@ function getData(dbName, storeName) {
   }
 
 
-  function enableEditingDC(id) {
-    const todosByDateCreatedCopy = [...todosByDateCreated];
-    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
-    todoByDateCreated.isEditable = true;
-    setTodosByDateCreated(todosByDateCreatedCopy);
-    setEditing(true);
-  }
-
-  function enableEditingDD(id) {
-    const todosByDateDueCopy = [...todosByDateDue];
-    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
-    todoByDateDue.isEditable = true;
-    setTodosByDateDue(todosByDateDueCopy);
-    setEditing(true);
-  }
-
-  function enableEditingF(id) {
-    const todosCopy = [...customTodos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.isEditable = true;
-    setCustomTodos(todosCopy);
-    setEditing(true);
-  }
-
-
-    function enableEditing(id) {
-    const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.isEditable = true;
-    setTodos(todosCopy);
-    setEditing(true);
-  }
-
-
   function disableEditing(id) {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
     todo.isEditable = false;
     setTodos(todosCopy);
-    setEditing(false);
-  }
-
-
-  function disableEditingDC(id) {
-    const todosByDateCreatedCopy = [...todosByDateCreated];
-    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
-    todoByDateCreated.isEditable = false;
-    setTodosByDateCreated(todosByDateCreatedCopy);
-    setEditing(false);
-  }
-
-  function disableEditingDD(id) {
-    const todosByDateDueCopy = [...todosByDateDue];
-    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
-    todoByDateDue.isEditable = false;
-    setTodosByDateDue(todosByDateDueCopy);
-    setEditing(false);
-  }
-
-  function disableEditingF(id) {
-    const todosCopy = [...customTodos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.isEditable = false;
-    setCustomTodos(todosCopy);
     setEditing(false);
   }
 
@@ -407,64 +260,8 @@ function getData(dbName, storeName) {
     setEditingCategory(true);
   }
 
-
-
-  function enableCategoryDropdownDC(id) {
-    const todosByDateCreatedCopy = [...todosByDateCreated];
-    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
-    todoByDateCreated.isCategoryEditable = true;
-    setTodosByDateCreated(todosByDateCreatedCopy);
-    setEditingCategory(true);
-  }
-
-
-  function enableCategoryDropdownDD(id) {
-    const todosByDateDueCopy = [...todosByDateDue];
-    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
-    todoByDateDue.isCategoryEditable = true;
-    setTodosByDateDue(todosByDateDueCopy);
-    setEditingCategory(true);
-  }
-
-  function enableCategoryDropdownF(id) {
-    const todosCopy = [...customTodos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.isCategoryEditable = true;
-    setTodos(todosCopy);
-    setEditingCategory(true);
-  }
-
-
-
   function disableCategoryDropdown(id) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.isCategoryEditable = false;
-    setTodos(todosCopy);
-    setEditingCategory(false);
-  }
-
-
-
-  function disableCategoryDropdownDC(id) {
-    const todosByDateCreatedCopy = [...todosByDateCreated];
-    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
-    todoByDateCreated.isCategoryEditable = false;
-    setTodosByDateCreated(todosByDateCreatedCopy);
-    setEditingCategory(false);
-  }
-
-
-  function disableCategoryDropdownDD(id) {
-    const todosByDateDueCopy = [...todosByDateDue];
-    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
-    todoByDateDue.isCategoryEditable = false;
-    setTodosByDateDue(todosByDateDueCopy);
-    setEditingCategory(false);
-  }
-
-  function disableCategoryDropdownF(id) {
-    const todosCopy = [...customTodos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
     todo.isCategoryEditable = false;
     setTodos(todosCopy);
@@ -536,52 +333,6 @@ function getData(dbName, storeName) {
   }
 
 
-
-   function saveTitleDC(id, newTitle) {
-    const todosByDateCreatedCopy = [...todosByDateCreated];
-    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
-    todoByDateCreated.text = newTitle;
-    console.log("New title: ", newTitle);
-    todoByDateCreated.isEditable = false;
-    todoByDateCreated.syncStatus = 'updated-title';
-    setTodosByDateCreated(todosByDateCreatedCopy);
-    setEditing(false);
-    
-    // Here you would also want to update the backend about the change
-    updateTitle(id, newTitle);
-  }
-
-
-  function saveTitleDD(id, newTitle) {
-    const todosByDateDueCopy = [...todosByDateDue];
-    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
-    todoByDateDue.text = newTitle;
-    console.log("New title: ", newTitle);
-    todoByDateDue.isEditable = false;
-    todoByDateDue.syncStatus = 'updated-title';
-    setTodosByDateDue(todosByDateDueCopy);
-    setEditing(false);
-    
-    // Here you would also want to update the backend about the change
-    updateTitle(id, newTitle);
-  }
-
-
-  function saveTitleF(id, newTitle) {
-    const todosCopy = [...customTodos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.text = newTitle;
-    todo.syncStatus = 'updated-title';
-    console.log("New title: ", newTitle);
-    todo.isEditable = false;
-    setCustomTodos(todosCopy);
-    setEditing(false);
-    
-    // Here you would also want to update the backend about the change
-    updateTitle(id, newTitle);
-  }
-
-
   function saveCategory(id, newCategory) {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id));
@@ -590,52 +341,6 @@ function getData(dbName, storeName) {
     todo.isCategoryEditable = false;
     todo.syncStatus = 'updated-category';
     setTodos(todosCopy);
-    setEditingCategory(false);
-    
-    // Here you would also want to update the backend about the change
-    updateCategory(id, newCategory);
-  }
-
-
-
-  function saveCategoryDC(id, newCategory) {
-    const todosByDateCreatedCopy = [...todosByDateCreated];
-    const todoByDateCreated = todosByDateCreatedCopy.find(t => t.id === parseInt(id));
-    todoByDateCreated.category = newCategory;
-    console.log("New category: ", newCategory);
-    todoByDateCreated.isCategoryEditable = false;
-    todoByDateCreated.syncStatus = 'updated-category';
-    setTodosByDateCreated(todosByDateCreatedCopy);
-    setEditingCategory(false);
-    
-    // Here you would also want to update the backend about the change
-    updateCategory(id, newCategory);
-  }
-
-
-  function saveCategoryDD(id, newCategory) {
-    const todosByDateDueCopy = [...todosByDateDue];
-    const todoByDateDue = todosByDateDueCopy.find(t => t.id === parseInt(id));
-    todoByDateDue.category = newCategory;
-    console.log("New category: ", newCategory);
-    todoByDateDue.isCategoryEditable = false;
-    todoByDateDue.syncStatus = 'updated-category';
-    setTodosByDateDue(todosByDateDueCopy);
-    setEditingCategory(false);
-    
-    // Here you would also want to update the backend about the change
-    updateCategory(id, newCategory);
-  }
-
-
-  function saveCategoryF(id, newCategory) {
-    const todosCopy = [...customTodos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.category = newCategory;
-    console.log("New category: ", newCategory);
-    todo.isCategoryEditable = false;
-    todo.syncStatus = 'updated-category';
-    setCustomTodos(todosCopy);
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
@@ -703,8 +408,8 @@ function getData(dbName, storeName) {
     <div>
       
       <Routes>
-        <Route path="/" element={<CustomTodoList fetchTodos={fetchTodos} todos={customTodos} toggleTodo={toggleTodo} enableEditing={enableEditingF} enableCategoryDropdown={enableCategoryDropdownF} saveTitle={saveTitleF} saveCategory={saveCategoryF} disableEditing={disableEditingF} disableCategoryDropdown={disableCategoryDropdownF} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
-        <Route path="/todos" element={<TodoList todos={todos} todosByDateCreated={todosByDateCreated} todosByDateDue={todosByDateDue} toggleTodo={toggleTodo} enableEditing={enableEditing} enableEditingDC={enableEditingDC} enableEditingDD={enableEditingDD} enableCategoryDropdown={enableCategoryDropdown} enableCategoryDropdownDC={enableCategoryDropdownDC} enableCategoryDropdownDD={enableCategoryDropdownDD} saveTitle={saveTitle} saveTitleDC={saveTitleDC} saveTitleDD={saveTitleDD} saveCategory={saveCategory} saveCategoryDC={saveCategoryDC} saveCategoryDD={saveCategoryDD}  disableEditing={disableEditing} disableEditingDC={disableEditingDC} disableEditingDD={disableEditingDD} disableCategoryDropdown={disableCategoryDropdown} disableCategoryDropdownDC={disableCategoryDropdownDC} disableCategoryDropdownDD={disableCategoryDropdownDD} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
+        <Route path="/" element={<CustomTodoList todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+        <Route path="/todos" element={<TodoList todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory}  disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
         <Route path="/todos/:id" element={<TodoDetail todos={todos}/>} />
         <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo}/>} />
         <Route path="/add-todo" element={<AddTodo addTodo={addTodo}/>} />

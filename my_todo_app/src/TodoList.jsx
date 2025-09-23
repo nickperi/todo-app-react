@@ -6,30 +6,14 @@ import { FaRegCalendarDays } from "react-icons/fa6";
 import { FaPlus, FaSortAlphaDown } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa";
 
-function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enableEditing, enableEditingDC, enableEditingDD, enableCategoryDropdown, enableCategoryDropdownDC, enableCategoryDropdownDD, saveTitle, saveTitleDC, saveTitleDD, saveCategory, saveCategoryDC, saveCategoryDD, disableEditing, disableEditingDC, disableEditingDD, disableCategoryDropdown, disableCategoryDropdownDC, disableCategoryDropdownDD, isEditing, isEditingCategory}) {
+function TodoList({todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, disableEditing, disableCategoryDropdown, isEditing, isEditingCategory}) {
     const [filter, setFilter] = useState('all');
     const navigate = useNavigate();
 
-    function TodoListItems({filter}) {
-        
-        if(filter === 'date-due') {
-            return todosByDateDue.map(todo => {
-               return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditingDD} enableCategoryDropdown={enableCategoryDropdownDD} saveTitle={saveTitleDD} saveCategory={saveCategoryDD} disableEditing={disableEditingDD} disableCategoryDropdown={disableCategoryDropdownDD} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
-            });
-        }
-
-        if(filter === 'date-created') {
-            return todosByDateCreated.map(todo => {
-                return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditingDC} enableCategoryDropdown={enableCategoryDropdownDC} saveTitle={saveTitleDC} saveCategory={saveCategoryDC} disableEditing={disableEditingDC} disableCategoryDropdown={disableCategoryDropdownDC} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
-            });
-        }
-
-        if(filter === 'all') {
-            return todos.map(todo => {
+    function TodoListItems({}) {
+        return todos.map(todo => {
                 return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
         });
-        }
-        return null;
     }
 
 
@@ -45,12 +29,12 @@ function TodoList({todos, todosByDateCreated, todosByDateDue, toggleTodo, enable
             <br></br><br></br>
             <button className='add-todo' onClick={() => navigate('/add-todo')}>Add To-do <FaPlus /></button>
             <button className='view-calendar' onClick={() => navigate('/todos-calendar')}>Go to Calendar <FaRegCalendarDays /></button>
-            <button className='view-calendar' onClick={() => navigate('/custom-todos')}>Sort & Filter Todos <FaSortAlphaDown /> <FaFilter/></button>
+            <button className='view-calendar' onClick={() => navigate('/')}>Sort & Filter Todos <FaSortAlphaDown /> <FaFilter/></button>
 
             <h1>Todo List</h1>
             <br/><br/>
     
-            <div style={{ display: "grid", gap: "1rem", maxWidth: "400px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems filter={filter}/></div>
+            <div style={{ display: "grid", gap: "1rem", maxWidth: "400px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems/></div>
 
         </div>
     );
