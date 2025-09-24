@@ -91,7 +91,7 @@ function App() {
         e.preventDefault();
         deferredPrompt = e;
         <InstallButton/>;
-  });
+      });
   });
 
  
