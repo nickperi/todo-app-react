@@ -22,7 +22,7 @@ function App() {
 
 
   useEffect(() => {
-
+     saveData('myDatabase', 'todos', todos, 1); 
      getData("myDatabase", "todos")
       .then((data) => {
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
@@ -49,19 +49,19 @@ function App() {
         todo.syncStatus = 'synced';
       });
 
-      setTodos(data);
-      if(navigator.online) {
-        saveData('myDatabase', 'todos', data); 
+      if(navigator.onLine) {
+        saveData('myDatabase', 'todos', data, 1); 
+        setTodos(data);
       }
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
 
-      if(navigator.online)
+      if(navigator.onLine)
         navigate('/login');
     });
 
-    if(!navigator.online) {
+    if(!navigator.onLine) {
       getData("myDatabase", "todos")
       .then((data) => {
           console.log("Retrieved data:", data);
@@ -69,46 +69,54 @@ function App() {
         });
     }
 
-  }, [navigator.online]);
+  }, [navigator.onLine]);
 
 
 
-async function saveData(dbName, storeName, todos) {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, 4); // bump version if schema changes
+  async function saveData(dbName, storeName, data, key) {
+    return new Promise( (resolve, reject) => {
 
-    request.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(storeName)) {
-        // No keyPath since you're storing arrays manually
-        db.createObjectStore(storeName);
-      }
-    };
+      const request = indexedDB.open(dbName, 4); //change to 3 for local build
 
-    request.onsuccess = (e) => {
-      const db = e.target.result;
+      request.onerror = (e) => {
+        reject(`Database error: ${e.target.errorCode}`);
+      };
 
-      // Always wrap DB usage in try/catch style
-      try {
-        const tx = db.transaction([storeName], "readwrite");
-        const store = tx.objectStore(storeName);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
 
-        // Save the *entire array* under a fixed key
-        const putRequest = store.put(todos, "todos");
+        if(!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName);
+        }
+      };
 
-        putRequest.onsuccess = () => resolve("Todos saved successfully!");
-        putRequest.onerror = (err) => reject(err);
+      request.onsuccess = (e) => {
+        const db = e.target.result;
+        const transaction = db.transaction([storeName], 'readwrite');
 
-        tx.oncomplete = () => db.close();
-      } catch (err) {
-        reject(err);
-      }
-    };
+        transaction.onerror = (e) => {
+          reject(`Transaction error: ${e.target.errorCode}`);
+        };
 
-    request.onerror = (err) => reject(err);
-  });
-}
+        transaction.oncomplete = () => {
+          resolve('Data saved successfully!');
+        };
 
+        const objectStore = transaction.objectStore(storeName);
+
+        const putRequest = objectStore.put(data, key);
+
+        putRequest.onerror = (e) => {
+           reject(`Error saving data: ${e.target.errorCode}`);
+        };
+
+        putRequest.onsuccess = () => {
+          // Data successfully added to the object store
+        };
+
+      };
+    });
+  }
 
 
 function getData(dbName, storeName) {
@@ -158,7 +166,7 @@ function getData(dbName, storeName) {
     todo.syncStatus = 'added';
     const todosCopy = [...todos, todo];
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy); 
+    saveData('myDatabase', 'todos', todosCopy, 1); 
     navigate('/');
   }
 
@@ -218,7 +226,7 @@ function toggleTodo(id) {
         const todo = todosCopy.find(t => t.id === parseInt(id));
         todo.done = data.done;
         todo.date_completed = data.date_completed;
-        saveData('myDatabase', 'todos', todosCopy); 
+        saveData('myDatabase', 'todos', todosCopy, 1); 
         setTodos(todosCopy);
       })
       .catch(error => {
@@ -248,7 +256,7 @@ function toggleTodo(id) {
     todo.date_completed = formattedDate;
     todo.syncStatus = 'toggled';
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy); 
+    saveData('myDatabase', 'todos', todosCopy, 1); 
   }
 
   function saveOfflineUpdates(todos) {
@@ -369,7 +377,7 @@ function toggleTodo(id) {
     todo.isEditable = false;
     todo.syncStatus = 'updated-title';
     setTodos(todosCopy);
-    ('myDatabase', 'todos', todosCopy, 1); 
+    saveData('myDatabase', 'todos', todosCopy, 1); 
     setEditing(false);
     
     // Here you would also want to update the backend about the change
@@ -385,7 +393,7 @@ function toggleTodo(id) {
     todo.isCategoryEditable = false;
     todo.syncStatus = 'updated-category';
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy); 
+    saveData('myDatabase', 'todos', todosCopy, 1); 
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
