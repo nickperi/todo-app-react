@@ -66,7 +66,7 @@ function App() {
       getData("myDatabase", "todos")
       .then((data) => {
           console.log("Retrieved data:", data);
-          setTodos(data);
+          setTodos(data[0]);
         });
     }
 
