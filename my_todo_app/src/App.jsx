@@ -29,7 +29,7 @@ function App() {
 
       getData("myDatabase", "todos")
       .then((data) => {
-          const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
+          const todosToUpdate = data.filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
         });
 
@@ -66,7 +66,7 @@ function App() {
       getData("myDatabase", "todos")
       .then((data) => {
           console.log("Retrieved data:", data);
-          setTodos(data[0]);
+          setTodos(data);
         });
     }
 
