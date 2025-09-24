@@ -19,7 +19,25 @@ function App() {
   const [isEditing, setEditing] = useState(false);
   const [isEditingCategory, setEditingCategory] = useState(false);
   const navigate = useNavigate();
-  let deferredPrompt;
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault(); // Prevent automatic mini-infobar
+      setDeferredPrompt(e);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt(); // Show the install prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response: ${outcome}`);
+    setDeferredPrompt(null);
+  };
 
 
   useEffect(() => {
@@ -70,29 +88,6 @@ function App() {
     }
 
   }, [navigator.onLine]);
-
-
-  function InstallButton({}) {
-
-    const handleInstall = async () => {
-      if(deferredPrompt) {
-        deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        console.log("User response:", choice.outcome);
-        deferredPrompt = null;
-      }
-    };
-
-    return <button onClick={handleInstall}>Install Todo App</button>
-  }
-
-  useEffect(() => {
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        <InstallButton/>;
-      });
-  });
 
  
 
@@ -496,6 +491,12 @@ function toggleTodo(id) {
         <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
         <Route path="/todos-calendar" element={<Calendar/>} />
       </Routes>
+
+      {deferredPrompt && (
+        <button onClick={handleInstallClick}>
+          Install To-Do App
+        </button>
+      )}
     </div>
   );
 }
