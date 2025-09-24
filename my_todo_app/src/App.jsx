@@ -22,8 +22,12 @@ function App() {
 
 
   useEffect(() => {
-     saveData('myDatabase', 'todos', todos, 1); 
-     getData("myDatabase", "todos")
+
+
+    if(navigator.onLine) {
+      saveData('myDatabase', 'todos', todos, 1); 
+
+      getData("myDatabase", "todos")
       .then((data) => {
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
@@ -39,7 +43,6 @@ function App() {
         navigate('/login');
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       return response.json();
     })
     .then(data => {
@@ -49,19 +52,17 @@ function App() {
         todo.syncStatus = 'synced';
       });
 
-      if(navigator.onLine) {
-        saveData('myDatabase', 'todos', data, 1); 
-        setTodos(data);
-      }
+      saveData('myDatabase', 'todos', data, 1); 
+      setTodos(data);
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-
-      if(navigator.onLine)
-        navigate('/login');
+      navigate('/login');
     });
+    }
 
-    if(!navigator.onLine) {
+
+    else {
       getData("myDatabase", "todos")
       .then((data) => {
           console.log("Retrieved data:", data);
@@ -76,7 +77,7 @@ function App() {
   async function saveData(dbName, storeName, data, key) {
     return new Promise( (resolve, reject) => {
 
-      const request = indexedDB.open(dbName, 4); //change to 3 for local build
+      const request = indexedDB.open(dbName, 1); //change to 3 for local build
 
       request.onerror = (e) => {
         reject(`Database error: ${e.target.errorCode}`);
