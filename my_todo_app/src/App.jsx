@@ -148,6 +148,12 @@ function getData(dbName, storeName) {
       reject("Error opening database: " + event.target.errorCode);
     };
 
+    // Store not found → nothing to sync
+    if (!db.objectStoreNames.contains(storeName)) {
+      resolve([]);
+      return;
+    }
+
     request.onsuccess = (event) => {
       const db = event.target.result;
 
