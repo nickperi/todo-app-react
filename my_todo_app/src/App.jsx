@@ -86,11 +86,15 @@ function App() {
     return <button onClick={handleInstall}>Install Todo App</button>
   }
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      <InstallButton/>;
+  useEffect(() => {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        <InstallButton/>;
   });
+  });
+
+ 
 
 
 
