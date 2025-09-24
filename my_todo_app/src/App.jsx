@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
 
-     getData("myDatabase", "todos")
+     getData("TodosDb", "todos")
       .then((data) => {
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
@@ -51,7 +51,7 @@ function App() {
 
       setTodos(data);
       if(navigator.online) {
-        saveData('myDatabase', 'todos', data, 1); 
+        saveData('TodosDb', 'todos', data, 1); 
       }
     })
     .catch(error => {
@@ -62,7 +62,7 @@ function App() {
     });
 
     if(!navigator.online) {
-      getData("myDatabase", "todos")
+      getData("TodosDb", "todos") //change to myDatabase for local build
       .then((data) => {
           console.log("Retrieved data:", data);
           setTodos(data[0]);
@@ -166,7 +166,7 @@ function getData(dbName, storeName) {
     todo.syncStatus = 'added';
     const todosCopy = [...todos, todo];
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy, 1); 
+    saveData('TodosDb', 'todos', todosCopy, 1); 
     navigate('/');
   }
 
@@ -226,7 +226,7 @@ function toggleTodo(id) {
         const todo = todosCopy.find(t => t.id === parseInt(id));
         todo.done = data.done;
         todo.date_completed = data.date_completed;
-        saveData('myDatabase', 'todos', todosCopy, 1); 
+        saveData('TodosDb', 'todos', todosCopy, 1); 
         setTodos(todosCopy);
       })
       .catch(error => {
@@ -256,7 +256,7 @@ function toggleTodo(id) {
     todo.date_completed = formattedDate;
     todo.syncStatus = 'toggled';
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy, 1); 
+    saveData('TodosDb', 'todos', todosCopy, 1); 
   }
 
   function saveOfflineUpdates(todos) {
@@ -377,7 +377,7 @@ function toggleTodo(id) {
     todo.isEditable = false;
     todo.syncStatus = 'updated-title';
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy, 1); 
+    saveData('TodosDb', 'todos', todosCopy, 1); 
     setEditing(false);
     
     // Here you would also want to update the backend about the change
@@ -393,7 +393,7 @@ function toggleTodo(id) {
     todo.isCategoryEditable = false;
     todo.syncStatus = 'updated-category';
     setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy, 1); 
+    saveData('TodosDb', 'todos', todosCopy, 1); 
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
