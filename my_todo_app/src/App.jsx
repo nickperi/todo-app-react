@@ -76,7 +76,7 @@ function App() {
   async function saveData(dbName, storeName, data, key) {
     return new Promise( (resolve, reject) => {
 
-      const request = indexedDB.open(dbName, 5); //change to 3 for local build
+      const request = indexedDB.open(dbName, 4); //change to 3 for local build
 
       request.onerror = (e) => {
         reject(`Database error: ${e.target.errorCode}`);
