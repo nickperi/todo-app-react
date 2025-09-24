@@ -216,6 +216,7 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
                 <option value="">Any</option>
                 <option value="job application">Job Application</option>
                 <option value="work">Work</option>
+                <option value="school">School</option>
                 <option value="personal">Personal</option>
                 <option value="shopping">Shopping</option>
                 <option value="urgent">Urgent</option>
