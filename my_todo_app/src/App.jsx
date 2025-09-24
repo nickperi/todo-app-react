@@ -16,17 +16,18 @@ import CustomTodoList from './CustomTodoList.jsx';
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [todosByDateCreated, setTodosByDateCreated] = useState([]);
-  const [todosByDateDue, setTodosByDateDue] = useState([]);
-  const [todosDueOnDate, setTodosDueOnDate] = useState([]);
-  const [customTodos, setCustomTodos] = useState([]);
-
   const [isEditing, setEditing] = useState(false);
   const [isEditingCategory, setEditingCategory] = useState(false);
   const navigate = useNavigate();
 
 
   useEffect(() => {
+
+     getData("myDatabase", "todos")
+      .then((data) => {
+          const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
+          saveOfflineUpdates(todosToUpdate);
+        });
 
       fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
@@ -67,14 +68,15 @@ function App() {
           setTodos(data[0]);
         });
     }
-  }, [todos]);
+
+  }, [navigator.online]);
 
 
 
   async function saveData(dbName, storeName, data, key) {
     return new Promise( (resolve, reject) => {
 
-      const request = indexedDB.open(dbName, 3);
+      const request = indexedDB.open(dbName, 4);
 
       request.onerror = (e) => {
         reject(`Database error: ${e.target.errorCode}`);
@@ -162,6 +164,15 @@ function getData(dbName, storeName) {
     todo.isEditable = false;
     todo.isCategoryEditable = false;
     todo.syncStatus = 'added';
+    const todosCopy = [...todos, todo];
+    setTodos(todosCopy);
+    saveData('myDatabase', 'todos', todosCopy, 1); 
+    navigate('/');
+  }
+
+
+  function saveAddedTodo(todo) {
+
     const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json',},
@@ -182,55 +193,95 @@ function getData(dbName, storeName) {
         })
         .then(data => {
             console.log(data);
-            setTodos([...todos, data.todo]); // Append the new todo to the existing list
-            navigate('/');
-            window.location.reload();
+            const todosCopy = [...todos];
+            setTodos(todosCopy); // Append the new todo to the existing list
         })
         .catch(error => {
             console.error('Error:', error);
         });
-      
   }
 
 
 
-  function toggleTodo(id) {
+function toggleTodo(id) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.done = !todo.done;
-    todo.syncStatus = 'toggled';
-    setTodos(todosCopy);
-    setTodosByDateCreated(todosCopy);
-    setTodosByDateDue(todosCopy);
-    setTodosDueOnDate(todosCopy);
-    setCustomTodos(todosCopy);
 
     // Here you would also want to update the backend about the change
     const options = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content     
-        }
-    }
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json', // Crucial for indicating JSON content     
+      }
+  }
 
-    fetch('https://projectflaskmvc.onrender.com/todos/'+id+'/check', options)
-      .then(response => {
-        if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json(); // Assuming the server responds with JSON
-        })
-        .then(data => {
-            console.log(data);
-            const todosCopy = [...todos];
-            const todo = todosCopy.find(t => t.id === parseInt(id));
-            todo.done = data.done;
-            todo.date_completed = data.date_completed;
-            setTodos(todosCopy);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+  fetch('https://projectflaskmvc.onrender.com/todos/'+id+'/check', options)
+    .then(response => {
+      if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json(); // Assuming the server responds with JSON
+      })
+      .then(data => {
+        console.log(data);
+        const todo = todosCopy.find(t => t.id === parseInt(id));
+        todo.done = data.done;
+        todo.date_completed = data.date_completed;
+        saveData('myDatabase', 'todos', todosCopy, 1); 
+        setTodos(todosCopy);
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+  }
+
+  function toggleTodoOffline(id) {
+    const todosCopy = [...todos];
+    
+    const dateOptions = {
+      weekday: 'short', 
+      month: 'short',   
+      day: '2-digit',  
+      year: 'numeric',  
+      hour: '2-digit',  
+      minute: '2-digit',
+      hour12: true,  
+    };
+
+    const todo = todosCopy.find(t => t.id === parseInt(id));
+    todo.done = !todo.done;
+    const date = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', dateOptions);
+    const formattedDate = formatter.format(date);
+
+    todo.date_completed = formattedDate;
+    todo.syncStatus = 'toggled';
+    setTodos(todosCopy);
+    saveData('myDatabase', 'todos', todosCopy, 1); 
+  }
+
+  function saveOfflineUpdates(todos) {
+
+    todos.forEach(todo => {
+      if(todo.syncStatus === 'toggled') {
+        toggleTodo(todo.id);
+        todo.syncStatus = 'synced';
+      }
+
+      if(todo.syncStatus === 'added') {
+        saveAddedTodo(todo);
+        todo.syncStatus = 'synced';
+      }
+
+      if(todo.syncStatus === 'updated-title') {
+        updateTitle(todo.id, todo.text);
+        todo.syncStatus = 'synced';
+      }
+
+      if(todo.syncStatus === 'updated-category') {
+        updateCategory(todo.id, todo.category);
+        todo.syncStatus = 'synced';
+      }
+    });
   }
 
 
@@ -326,10 +377,11 @@ function getData(dbName, storeName) {
     todo.isEditable = false;
     todo.syncStatus = 'updated-title';
     setTodos(todosCopy);
+    saveData('myDatabase', 'todos', todosCopy, 1); 
     setEditing(false);
     
     // Here you would also want to update the backend about the change
-    updateTitle(id, newTitle);
+    //updateTitle(id, newTitle);
   }
 
 
@@ -341,10 +393,11 @@ function getData(dbName, storeName) {
     todo.isCategoryEditable = false;
     todo.syncStatus = 'updated-category';
     setTodos(todosCopy);
+    saveData('myDatabase', 'todos', todosCopy, 1); 
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
-    updateCategory(id, newCategory);
+   // updateCategory(id, newCategory);
   }
 
 
@@ -408,8 +461,8 @@ function getData(dbName, storeName) {
     <div>
       
       <Routes>
-        <Route path="/" element={<CustomTodoList todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
-        <Route path="/todos" element={<TodoList todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory}  disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
+        <Route path="/" element={<CustomTodoList todos={todos} toggleTodo={toggleTodoOffline} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
+        <Route path="/todos" element={<TodoList todos={todos} toggleTodo={toggleTodoOffline} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory}  disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory} />}/>
         <Route path="/todos/:id" element={<TodoDetail todos={todos}/>} />
         <Route path="/add-todo/:date_due" element={<AddTodo addTodo={addTodo}/>} />
         <Route path="/add-todo" element={<AddTodo addTodo={addTodo}/>} />

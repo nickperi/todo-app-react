@@ -20,7 +20,7 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
 
     useEffect(() => {
         handleApply();
-    }, [sort, categoryFilter, dateDue, statusFilter]);
+    }, [todos, sort, categoryFilter, dateDue, statusFilter]);
 
     function sortTodos(todos, sort) {
         let sortedTodos = [];
