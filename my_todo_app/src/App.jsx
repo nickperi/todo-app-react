@@ -19,6 +19,7 @@ function App() {
   const [isEditing, setEditing] = useState(false);
   const [isEditingCategory, setEditingCategory] = useState(false);
   const navigate = useNavigate();
+  let deferredPrompt;
 
 
   useEffect(() => {
@@ -69,6 +70,27 @@ function App() {
     }
 
   }, [navigator.onLine]);
+
+
+  function InstallButton({}) {
+
+    const handleInstall = async () => {
+      if(deferredPrompt) {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        console.log("User response:", choice.outcome);
+        deferredPrompt = null;
+      }
+    };
+
+    return <button onClick={handleInstall}>Install Todo App</button>
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      <InstallButton/>;
+  });
 
 
 
