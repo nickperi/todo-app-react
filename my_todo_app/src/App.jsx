@@ -25,7 +25,6 @@ function App() {
 
 
     if(navigator.onLine) {
-      saveData('myDatabase', 'todos', todos, 1); 
 
       getData("myDatabase", "todos")
       .then((data) => {
