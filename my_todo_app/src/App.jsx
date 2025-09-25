@@ -46,8 +46,10 @@ function App() {
     if(navigator.onLine) {
       getData("myDatabase", "todos")
       .then((data) => {
+        if(data) {
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
+        }
         });
 
       fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
@@ -144,9 +146,9 @@ function getData(dbName, storeName) {
     // Open the database
     const request = indexedDB.open(dbName);
 
-    request.onerror = (event) => {
+    /*request.onerror = (event) => {
       reject("Error opening database: " + event.target.errorCode);
-    };
+    };*/
 
     request.onsuccess = (event) => {
       const db = event.target.result;
