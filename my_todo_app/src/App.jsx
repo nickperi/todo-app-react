@@ -72,7 +72,7 @@ function App() {
         todo.syncStatus = 'synced';
       });
 
-      saveData('myDatabase', 'todos', data, 2); 
+      saveData('myDatabase', 'todos', data, 1); 
       setTodos(data);
     })
     .catch(error => {
@@ -99,7 +99,7 @@ function App() {
   async function saveData(dbName, storeName, data, key) {
     return new Promise( (resolve, reject) => {
 
-      const request = indexedDB.open(dbName, 1); //change to 3 for local build
+      const request = indexedDB.open(dbName, 2); //change to 3 for local build
 
       request.onerror = (e) => {
         reject(`Database error: ${e.target.errorCode}`);
