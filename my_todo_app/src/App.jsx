@@ -50,6 +50,7 @@ function App() {
           console.log(data.length);
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
+          setTodos(todosToUpdate);
         }
         });
 
@@ -198,6 +199,10 @@ function getData(dbName, storeName) {
     setTodos(todosCopy);
     saveData('myDatabase', 'todos', todosCopy, 1); 
     navigate('/');
+
+    if(navigator.onLine) {
+      saveAddedTodo(todo);
+    }
   }
 
 
@@ -411,7 +416,10 @@ function toggleTodo(id) {
     setEditing(false);
     
     // Here you would also want to update the backend about the change
-    //updateTitle(id, newTitle);
+    if(navigator.onLine) {
+       updateTitle(id, newTitle);
+    }
+   
   }
 
 
@@ -427,7 +435,10 @@ function toggleTodo(id) {
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
-   // updateCategory(id, newCategory);
+     if(navigator.onLine) {
+        updateCategory(id, newCategory);
+    }
+  
   }
 
 
