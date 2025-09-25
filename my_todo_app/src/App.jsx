@@ -420,6 +420,7 @@ function toggleTodo(id) {
     setEditing(false);
     
     // Here you would also want to update the backend about the change
+    console.log(navigator.onLine);
     if(navigator.onLine) {
       console.log('updating title...');
       updateTitle(id, newTitle);
@@ -440,6 +441,7 @@ function toggleTodo(id) {
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
+    console.log(navigator.onLine);
      if(navigator.onLine) {
         console.log('updating category...');
         updateCategory(id, newCategory);
