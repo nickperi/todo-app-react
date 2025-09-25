@@ -47,6 +47,7 @@ function App() {
       getData("myDatabase", "todos")
       .then((data) => {
         if(data) {
+          console.log(data);
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
         }
