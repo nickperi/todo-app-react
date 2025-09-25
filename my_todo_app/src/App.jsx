@@ -72,7 +72,7 @@ function App() {
         todo.syncStatus = 'synced';
       });
 
-      saveData('myDatabase', 'todos', data, 1); 
+      saveData('myDatabase', 'todos', data, 2); 
       setTodos(data);
     })
     .catch(error => {
