@@ -39,20 +39,27 @@ function App() {
     setDeferredPrompt(null);
   };
 
-
-  useEffect(() => {
-
-
-    if(navigator.onLine) {
+  window.addEventListener('online', () => {
       getData("myDatabase", "todos")
       .then((data) => {
         if(data.length > 0) {
           console.log(data.length);
           const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
           saveOfflineUpdates(todosToUpdate);
-          setTodos(todosToUpdate);
         }
+      });
+  });
+
+  window.addEventListener('offline', () => {
+    getData("myDatabase", "todos")
+      .then((data) => {
+          console.log("Retrieved data:", data);
+          setTodos(data[0]);
         });
+  });
+
+
+  useEffect(() => {
 
       fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
@@ -78,20 +85,10 @@ function App() {
     })
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
-      navigate('/login');
+      //navigate('/login');
     });
-    }
 
-
-    else {
-      getData("myDatabase", "todos")
-      .then((data) => {
-          console.log("Retrieved data:", data);
-          setTodos(data[0]);
-        });
-    }
-
-  }, [navigator.onLine]);
+  }, []);
 
  
 
