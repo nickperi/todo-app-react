@@ -61,6 +61,7 @@ function App() {
 
   useEffect(() => {
 
+    window.addEventListener('online', () => {
       fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
             'Content-Type': 'application/json', // Crucial for indicating JSON content
           },
@@ -86,6 +87,7 @@ function App() {
     .catch(error => {
       console.error('There was a problem with the fetch operation:', error);
       //navigate('/login');
+    });
     });
 
   }, []);
