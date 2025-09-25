@@ -148,14 +148,14 @@ function getData(dbName, storeName) {
       reject("Error opening database: " + event.target.errorCode);
     };
 
-    // Store not found → nothing to sync
-    if (!db.objectStoreNames.contains(storeName)) {
-      resolve([]);
-      return;
-    }
-
     request.onsuccess = (event) => {
       const db = event.target.result;
+
+      // Store not found → nothing to sync
+      if (!db.objectStoreNames.contains(storeName)) {
+        resolve([]);
+        return;
+      }
 
       // Start a read-only transaction
       const transaction = db.transaction([storeName], "readonly");
