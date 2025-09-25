@@ -356,7 +356,8 @@ function toggleTodo(id) {
 
 
   function updateTitle(id, newTitle) {
-
+      const todo = todos.find(todo => todo.id === parseInt(id));
+      todo.syncStatus = 'synced';
       fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json',},
@@ -380,6 +381,9 @@ function toggleTodo(id) {
 
 
   function updateCategory(id, newCategory) {
+
+    const todo = todos.find(todo => todo.id === parseInt(id));
+    todo.syncStatus = 'synced';
 
       fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
         method: 'PUT',
@@ -417,7 +421,8 @@ function toggleTodo(id) {
     
     // Here you would also want to update the backend about the change
     if(navigator.onLine) {
-       updateTitle(id, newTitle);
+      console.log('updating title...');
+      updateTitle(id, newTitle);
     }
    
   }
@@ -436,6 +441,7 @@ function toggleTodo(id) {
     
     // Here you would also want to update the backend about the change
      if(navigator.onLine) {
+        console.log('updating category...');
         updateCategory(id, newCategory);
     }
   
