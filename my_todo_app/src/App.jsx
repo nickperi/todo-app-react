@@ -50,14 +50,6 @@ function App() {
       });
   });
 
-  window.addEventListener('offline', () => {
-    getData("myDatabase", "todos")
-      .then((data) => {
-          console.log("Retrieved data:", data);
-          setTodos(data[0]);
-        });
-  });
-
 
   useEffect(() => {
 
@@ -89,6 +81,14 @@ function App() {
       //navigate('/login');
     });
     });
+
+  window.addEventListener('offline', () => {
+    getData("myDatabase", "todos")
+      .then((data) => {
+          console.log("Retrieved data:", data);
+          setTodos(data[0]);
+        });
+  });
 
   }, []);
 
