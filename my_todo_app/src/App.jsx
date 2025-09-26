@@ -39,26 +39,12 @@ function App() {
     setDeferredPrompt(null);
   };
 
-  window.addEventListener('online', () => {
-      getData("myDatabase", "todos")
-      .then((data) => {
-        if(data.length > 0) {
-          console.log(data.length);
-          const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
-          saveOfflineUpdates(todosToUpdate);
-        }
-      });
-  });
-
-
-  useEffect(() => {
-
-    window.addEventListener('online', () => {
-      fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-          },
-          credentials: 'include'
-      })
+  function fetchTodos() {
+    fetch('https://projectflaskmvc.onrender.com/api/todos', {headers: {
+          'Content-Type': 'application/json', // Crucial for indicating JSON content
+        },
+      credentials: 'include'
+    })
     .then(response => {
       if(!response.ok) {
         navigate('/login');
@@ -67,6 +53,7 @@ function App() {
       return response.json();
     })
     .then(data => {
+      console.log("fetched: ", data);
       data.map(todo => {
         todo.isEditable = false;
         todo.isCategoryEditable = false;
@@ -80,16 +67,32 @@ function App() {
       console.error('There was a problem with the fetch operation:', error);
       navigate('/login');
     });
+  };
+
+
+  useEffect(() => {
+
+    window.addEventListener('online', () => {
+      getData("myDatabase", "todos")
+      .then((data) => {
+          if(data.length > 0) {
+            const todosToUpdate = data[0].filter(todo => todo.syncStatus !== 'synced');
+            saveOfflineUpdates(todosToUpdate);
+          }
+        });
     });
 
-  window.addEventListener('offline', () => {
-    getData("myDatabase", "todos")
+    if(navigator.onLine) {
+      fetchTodos();
+    }
+    
+    else {
+      getData("myDatabase", "todos")
       .then((data) => {
-          console.log("Retrieved data:", data);
-          setTodos(data[0]);
-        });
-  });
-
+        console.log("Retrieved data:", data);
+        setTodos(data[0]);
+      });
+    }
   }, []);
 
  
@@ -239,6 +242,7 @@ function getData(dbName, storeName) {
 
 function toggleTodo(id) {
     const todosCopy = [...todos];
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
 
     // Here you would also want to update the backend about the change
     const options = {
@@ -257,7 +261,6 @@ function toggleTodo(id) {
       })
       .then(data => {
         console.log(data);
-        const todo = todosCopy.find(t => t.id === parseInt(id));
         todo.done = data.done;
         todo.date_completed = data.date_completed;
         saveData('myDatabase', 'todos', todosCopy, 1); 
@@ -269,28 +272,35 @@ function toggleTodo(id) {
   }
 
   function toggleTodoOffline(id) {
-    const todosCopy = [...todos];
+
+    if(navigator.onLine) {
+      console.log('Toggling todo...'); 
+      toggleTodo(id);
+    }
+    else {
+      const todosCopy = [...todos];
     
-    const dateOptions = {
-      weekday: 'short', 
-      month: 'short',   
-      day: '2-digit',  
-      year: 'numeric',  
-      hour: '2-digit',  
-      minute: '2-digit',
-      hour12: true,  
-    };
+      const dateOptions = {
+        weekday: 'short', 
+        month: 'short',   
+        day: '2-digit',  
+        year: 'numeric',  
+        hour: '2-digit',  
+        minute: '2-digit',
+        hour12: true,  
+      };
 
-    const todo = todosCopy.find(t => t.id === parseInt(id));
-    todo.done = !todo.done;
-    const date = new Date();
-    const formatter = new Intl.DateTimeFormat('en-US', dateOptions);
-    const formattedDate = formatter.format(date);
+      const todo = todosCopy.find(t => t.id === parseInt(id));
+      todo.done = !todo.done;
+      const date = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', dateOptions);
+      const formattedDate = formatter.format(date);
 
-    todo.date_completed = formattedDate;
-    todo.syncStatus = 'toggled';
-    setTodos(todosCopy);
-    saveData('myDatabase', 'todos', todosCopy, 1); 
+      todo.date_completed = formattedDate;
+      todo.syncStatus = 'toggled';
+      setTodos(todosCopy);
+      saveData('myDatabase', 'todos', todosCopy, 1); 
+    }
   }
 
   function saveOfflineUpdates(todos) {
@@ -355,8 +365,7 @@ function toggleTodo(id) {
 
 
   function updateTitle(id, newTitle) {
-      const todo = todos.find(todo => todo.id === parseInt(id));
-      todo.syncStatus = 'synced';
+
       fetch(`https://projectflaskmvc.onrender.com/todos/${id}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json',},
@@ -380,9 +389,6 @@ function toggleTodo(id) {
 
 
   function updateCategory(id, newCategory) {
-
-    const todo = todos.find(todo => todo.id === parseInt(id));
-    todo.syncStatus = 'synced';
 
       fetch(`https://projectflaskmvc.onrender.com/todos/${id}/change-category`, {
         method: 'PUT',
@@ -419,7 +425,6 @@ function toggleTodo(id) {
     setEditing(false);
     
     // Here you would also want to update the backend about the change
-    console.log(navigator.onLine);
     if(navigator.onLine) {
       console.log('updating title...');
       updateTitle(id, newTitle);
@@ -440,7 +445,6 @@ function toggleTodo(id) {
     setEditingCategory(false);
     
     // Here you would also want to update the backend about the change
-    console.log(navigator.onLine);
      if(navigator.onLine) {
         console.log('updating category...');
         updateCategory(id, newCategory);
