@@ -6,11 +6,7 @@ import './App.css'
 
 function TodoDetail({todos}) {
   const { id } = useParams();
-  const todo = todos.find(todo => todo.id === parseInt(id));
-
-  //if(!isLoggedIn) {
-    //return <Navigate to="/login" />;
-  //} 
+  const todo = todos.find(todo => todo.id === parseInt(id, 10));
 
   if(todo.done) {
     return (

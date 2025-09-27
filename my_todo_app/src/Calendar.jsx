@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import TodosByDueDate from "./TodosByDueDate";
 
-function Calendar ({}) {
+function Calendar ({getData, saveData}) {
     const currentDate = new Date();
     const [month, setMonth] = useState(currentDate.getMonth());
     const [year, setYear] = useState(currentDate.getFullYear());
@@ -57,24 +57,18 @@ function Calendar ({}) {
 
 
  useEffect(() => {
-   fetch(`https://projectflaskmvc.onrender.com/todos/${year}/${month+1}`, {headers: {
-            'Content-Type': 'application/json', // Crucial for indicating JSON content
-        },
-        credentials: 'include',
-    })
-          .then(response => {
-          if(!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
+
+    getData('myDatabase', 'todos')
         .then(data => {
-          setTasks(separateTasksByDate(data));
-        })
-        .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        navigate('/login');
-      });
+        if(data.length > 0) {
+            const monthlyTasks = data[0].filter(task => {
+                const taskDate = new Date(task.date_due);
+                return taskDate.getFullYear() === year && taskDate.getMonth() === month;
+            });
+            setTasks(separateTasksByDate(monthlyTasks));
+        }
+    });
+    
   }, [month]);
 
 

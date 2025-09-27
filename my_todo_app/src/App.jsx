@@ -72,7 +72,7 @@ function App() {
 
   useEffect(() => {
 
-    window.addEventListener('online', () => {
+   window.addEventListener('online', () => {
       getData("myDatabase", "todos")
       .then((data) => {
           if(data.length > 0) {
@@ -240,9 +240,10 @@ function getData(dbName, storeName) {
 
 
 
-function toggleTodo(id) {
+function toggleTodo(todos, id) {
     const todosCopy = [...todos];
     const todo = todosCopy.find(t => t.id === parseInt(id, 10));
+    console.log("Toggling (online)", todo.text, "with id:", id, "Current done status:", todo.done);
 
     // Here you would also want to update the backend about the change
     const options = {
@@ -271,26 +272,27 @@ function toggleTodo(id) {
       });
   }
 
+
+
   function toggleTodoOffline(id) {
+    const todosCopy = [...todos];
+
+    const dateOptions = {
+      weekday: 'short', 
+      month: 'short',   
+      day: '2-digit',  
+      year: 'numeric',  
+      hour: '2-digit',  
+      minute: '2-digit',
+      hour12: true,  
+    };
 
     if(navigator.onLine) {
-      console.log('Toggling todo...'); 
-      toggleTodo(id);
+      toggleTodo(todosCopy, id);
     }
     else {
-      const todosCopy = [...todos];
-    
-      const dateOptions = {
-        weekday: 'short', 
-        month: 'short',   
-        day: '2-digit',  
-        year: 'numeric',  
-        hour: '2-digit',  
-        minute: '2-digit',
-        hour12: true,  
-      };
-
-      const todo = todosCopy.find(t => t.id === parseInt(id));
+      const todo = todosCopy.find(t => t.id === parseInt(id, 10));
+      console.log("Toggling (offline)", todo.text, "with id:", id, "Current done status:", todo.done);
       todo.done = !todo.done;
       const date = new Date();
       const formatter = new Intl.DateTimeFormat('en-US', dateOptions);
@@ -303,11 +305,14 @@ function toggleTodo(id) {
     }
   }
 
+
+
   function saveOfflineUpdates(todos) {
+    const todosCopy = [...todos];
 
     todos.forEach(todo => {
       if(todo.syncStatus === 'toggled') {
-        toggleTodo(todo.id);
+        toggleTodo(todosCopy, todo.id);
         todo.syncStatus = 'synced';
       }
 
@@ -329,9 +334,11 @@ function toggleTodo(id) {
   }
 
 
+
+
   function enableEditing(id) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
     todo.isEditable = true;
     setTodos(todosCopy);
     setEditing(true);
@@ -340,7 +347,7 @@ function toggleTodo(id) {
 
   function disableEditing(id) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
     todo.isEditable = false;
     setTodos(todosCopy);
     setEditing(false);
@@ -349,7 +356,7 @@ function toggleTodo(id) {
 
   function enableCategoryDropdown(id) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
     todo.isCategoryEditable = true;
     setTodos(todosCopy);
     setEditingCategory(true);
@@ -357,7 +364,7 @@ function toggleTodo(id) {
 
   function disableCategoryDropdown(id) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
     todo.isCategoryEditable = false;
     setTodos(todosCopy);
     setEditingCategory(false);
@@ -415,9 +422,9 @@ function toggleTodo(id) {
 
   function saveTitle(id, newTitle) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
     todo.text = newTitle;
-    console.log("New title: ", newTitle);
+    console.log('New title of todo', id, ': ', todo.text);
     todo.isEditable = false;
     todo.syncStatus = 'updated-title';
     setTodos(todosCopy);
@@ -435,9 +442,9 @@ function toggleTodo(id) {
 
   function saveCategory(id, newCategory) {
     const todosCopy = [...todos];
-    const todo = todosCopy.find(t => t.id === parseInt(id));
+    const todo = todosCopy.find(t => t.id === parseInt(id, 10));
     todo.category = newCategory;
-    console.log("New category: ", newCategory);
+    console.log('New category of todo', id, ': ', todo.category);
     todo.isCategoryEditable = false;
     todo.syncStatus = 'updated-category';
     setTodos(todosCopy);
@@ -521,7 +528,7 @@ function toggleTodo(id) {
         <Route path="/sign-up" element={<SignUp addUser={addUser} />} />
         <Route path="/login" element={<Login loginUser={loginUser} />} />
         <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
-        <Route path="/todos-calendar" element={<Calendar/>} />
+        <Route path="/todos-calendar" element={<Calendar saveData={saveData} getData={getData}/>} />
       </Routes>
 
       {deferredPrompt && (
