@@ -264,8 +264,8 @@ function toggleTodo(todos, id) {
         console.log(data);
         todo.done = data.done;
         todo.date_completed = data.date_completed;
-        saveData('myDatabase', 'todos', todosCopy, 1); 
-        setTodos(todosCopy);
+        saveData('myDatabase', 'todos', todosCopy, 1);
+        setTodos(todosCopy); 
       })
       .catch(error => {
           console.error('Error:', error);

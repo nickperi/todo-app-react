@@ -11,9 +11,17 @@ function TodoList({todos, toggleTodo, enableEditing, enableCategoryDropdown, sav
     const navigate = useNavigate();
 
     function TodoListItems({}) {
-        return todos.map(todo => {
-                return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
-        });
+        return <ul>
+            {filter === 'all' && todos.map(todo => {
+                return <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>
+            })}
+            {filter === 'date-due' && [...todos].sort((a, b) => new Date(b.date_due) - new Date(a.date_due)).map(todo => {
+                return <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>
+            })}
+            {filter === 'date-created' && [...todos].sort((a, b) => new Date(a.date_created) - new Date(b.date_created)).map(todo => {
+                return <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>
+            })}
+        </ul>
     }
 
 
@@ -34,7 +42,7 @@ function TodoList({todos, toggleTodo, enableEditing, enableCategoryDropdown, sav
             <h1>Todo List</h1>
             <br/><br/>
     
-            <div style={{ display: "grid", gap: "1rem", maxWidth: "400px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems/></div>
+            <div style={{ display: "flex", gap: "1rem", maxWidth: "1000px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems/></div>
 
         </div>
     );

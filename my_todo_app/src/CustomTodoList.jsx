@@ -13,9 +13,11 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
     const navigate = useNavigate();
 
     function TodoListItems({todos}) {
-        return todos.map(todo => {
-            return <TodoItem todo={todo} key={todo.id} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>;
-        });
+        return <ul>
+                    {todos.length > 0 ? todos.map(todo => {
+                        return <TodoItem todo={todo} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>
+                    }) : <span>No Tasks</span>}
+                </ul>;
     }
 
     useEffect(() => {
@@ -89,7 +91,6 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
             filteredTodos = filterTodosByDueDate(filteredTodos, dateDue);
             filteredTodos = filterTodosByStatus(filteredTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&category=${categoryFilter}&date_due=${dateDue}&status=${statusFilter}`;
         }
         
         else if(categoryFilter !== '' && dateDue !== '' && statusFilter !== '') {
@@ -97,7 +98,6 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
             filteredTodos = filterTodosByDueDate(filteredTodos, dateDue);
             filteredTodos = filterTodosByStatus(filteredTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-           //url = `https://projectflaskmvc.onrender.com/custom-todos?category=${categoryFilter}&date_due=${dateDue}&status=${statusFilter}`;
         }
 
         else if(sort !== '' && dateDue !== '' && statusFilter !== '') {
@@ -105,7 +105,6 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
             filteredTodos = filterTodosByCategory(sortedTodos, categoryFilter);
             filteredTodos = filterTodosByStatus(filteredTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&date_due=${dateDue}&status=${statusFilter}`;
         }
 
         else if(sort !== '' && categoryFilter !== '' && dateDue !== '') {
@@ -113,7 +112,6 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
             filteredTodos = filterTodosByCategory(sortedTodos, categoryFilter);
             filteredTodos = filterTodosByDueDate(filteredTodos, dateDue);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&category=${categoryFilter}&date_due=${dateDue}`;
         }
 
         else if(sort !== '' && categoryFilter !== '' && statusFilter !== '') {
@@ -121,81 +119,67 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
             filteredTodos = filterTodosByCategory(sortedTodos, categoryFilter);
             filteredTodos = filterTodosByStatus(filteredTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-           //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&category=${categoryFilter}&status=${statusFilter}`;
         }
 
         else if (sort !== '' && categoryFilter !== '') {
             sortedTodos = sortTodos(todos, sort);
             filteredTodos = filterTodosByCategory(sortedTodos, categoryFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&category=${categoryFilter}`;
         }
 
         else if(sort !== '' && dateDue !== '') {
             sortedTodos = sortTodos(todos, sort);
             filteredTodos = filterTodosByDueDate(sortedTodos, dateDue);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&date_due=${dateDue}`;
         }
 
         else if(sort !== '' && statusFilter !== '') {
             sortedTodos = sortTodos(todos, sort);
             filteredTodos = filterTodosByStatus(sortedTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}&status=${statusFilter}`;
         }
 
         else if(categoryFilter !== '' && dateDue !== '') {
             filteredTodos = filterTodosByCategory(todos, categoryFilter);
             filteredTodos = filterTodosByDueDate(filteredTodos, dateDue);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?category=${categoryFilter}&date_due=${dateDue}`;
         }
 
         else if(categoryFilter !== '' && statusFilter !== '') {
             filteredTodos = filterTodosByCategory(todos, categoryFilter);
             filteredTodos = filterTodosByStatus(filteredTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?category=${categoryFilter}&status=${statusFilter}`;
         }
 
         else if(dateDue !== '' && statusFilter !== '') {
             filteredTodos = filterTodosByDueDate(todos, dateDue);
             filteredTodos = filterTodosByStatus(filteredTodos, statusFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?date_due=${dateDue}&status=${statusFilter}`;
         }
 
         else if(sort !== '') {
             sortedTodos = sortTodos(todos, sort);
             setFilteredTasks(sortedTodos);
-          //url = `https://projectflaskmvc.onrender.com/custom-todos?sort=${sort}`;
         }
 
         else if(categoryFilter !== '') {
             filteredTodos = filterTodosByCategory(todos, categoryFilter);
             setFilteredTasks(filteredTodos);
-           //url = `https://projectflaskmvc.onrender.com/custom-todos?category=${categoryFilter}`;
         }
 
         else if(dateDue !== '') {
             filteredTodos = filterTodosByDueDate(todos, dateDue);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?date_due=${dateDue}`;
         }
 
         else if(statusFilter !== '') {
             filteredTodos = filterTodosByStatus(todos, statusFilter);
             setFilteredTasks(filteredTodos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos?status=${statusFilter}`;
         }
 
         else {
              setFilteredTasks(todos);
-            //url = `https://projectflaskmvc.onrender.com/custom-todos`;
         }
-
-        //fetchTodos(url);
     };
 
 
@@ -240,7 +224,7 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
             <h1>Todo List</h1>
             <br/><br/>
     
-            <div style={{ display: "grid", gap: "1rem", maxWidth: "400px", margin: "auto", overflowAnchor: 'none'}}><TodoListItems todos={filteredTasks}/></div>
+            <div style={{ display: "flex", margin: "auto"}}><TodoListItems todos={filteredTasks}/></div>
 
         </div>
     );
