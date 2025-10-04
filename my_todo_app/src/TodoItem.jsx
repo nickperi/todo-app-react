@@ -69,7 +69,7 @@ function TodoItem({todo, toggleTodo, enableEditing, enableCategoryDropdown, save
             
             <li 
                 key={todo.id}
-                style={{backgroundColor: todo.done ? '#339966':'#FF6666', listStyleType: 'none', maxWidth: '1000px', marginBottom: '10px', border: '1px solid grey', padding: '10px', borderRadius: '5px'}}>
+                style={{backgroundColor: todo.done ? '#339966':'#ff8080', listStyleType: 'none', maxWidth: '1000px', marginBottom: '10px', border: '1px solid grey', padding: '10px', borderRadius: '5px'}}>
                 {todo.done ? <button className='added' onClick={() => toggleTodo(todo.id)}><MdCheckBox/></button> : <button className='removed' onClick={() => toggleTodo(todo.id)}><MdCheckBoxOutlineBlank/></button>} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <h4 style={{display:'inline'}} ref={itemRef} contentEditable={todo.isEditable} onBlur={(e) => {console.log(e.currentTarget.textContent); setTitle(e.currentTarget.textContent);}}>{todo.text}</h4> &nbsp;
                 
