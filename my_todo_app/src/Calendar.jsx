@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import TodosByDueDate from "./TodosByDueDate";
+import { FaChartArea, FaClipboardList} from "react-icons/fa";
 
 function Calendar ({getData, saveData}) {
     const currentDate = new Date();
@@ -203,6 +204,8 @@ function Calendar ({getData, saveData}) {
 
 
     return (<>
+            <button className='option' onClick={() => navigate('/')}>View To-do  <FaClipboardList /></button> &nbsp;
+            <button className='option' onClick={() => navigate('/todo-stats')}>View Stats  <FaChartArea /></button>
             <h1>{months[month]} {year}</h1>
             <label htmlFor="month-dropdown">Select Month: </label>
             <select name="month-dropdown" id="month" value={month} onChange={handleChange}>

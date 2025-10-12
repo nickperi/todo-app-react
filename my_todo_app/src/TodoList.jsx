@@ -35,9 +35,9 @@ function TodoList({todos, toggleTodo, enableEditing, enableCategoryDropdown, sav
             </select>
 
             <br></br><br></br>
-            <button className='add-todo' onClick={() => navigate('/add-todo')}>Add To-do <FaPlus /></button>
-            <button className='view-calendar' onClick={() => navigate('/todos-calendar')}>Go to Calendar <FaRegCalendarDays /></button>
-            <button className='view-calendar' onClick={() => navigate('/')}>Sort & Filter Todos <FaSortAlphaDown /> <FaFilter/></button>
+            <button className='option' onClick={() => navigate('/add-todo')}>Add To-do <FaPlus /></button>
+            <button className='option' onClick={() => navigate('/todos-calendar')}>Go to Calendar <FaRegCalendarDays /></button>
+            <button className='option' onClick={() => navigate('/')}>Sort & Filter Todos <FaSortAlphaDown /> <FaFilter/></button>
 
             <h1>Todo List</h1>
             <br/><br/>

@@ -2,7 +2,8 @@ import {useState} from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import TodoItem from './TodoItem';
-import { FaRegCalendarDays } from "react-icons/fa6";
+import { FaChartArea, FaRegCalendarDays } from "react-icons/fa6";
+import { FaPlus } from 'react-icons/fa';
 
 function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdown, saveTitle, saveCategory, disableEditing, disableCategoryDropdown, isEditing, isEditingCategory, }) {
     const [sort, setSort] = useState(localStorage.getItem('sort') || '');
@@ -23,6 +24,7 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
     useEffect(() => {
         handleApply();
     }, [todos, sort, categoryFilter, dateDue, statusFilter]);
+
 
     function sortTodos(todos, sort) {
         let sortedTodos = [];
@@ -185,15 +187,23 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
 
     return (
         <div>
+            
+            <button className='option' onClick={() => navigate('/add-todo')}>Add To-do <FaPlus /></button> &nbsp;
+            <button className='option' onClick={() => navigate('/todos-calendar')}>My Calendar <FaRegCalendarDays /></button> &nbsp;
+            <button className='option' onClick={() => navigate('/todo-stats')}>View Stats <FaChartArea /></button>
+            <br></br><br></br>
+            
             <label htmlFor="sort">Sort Todos by: </label>
             <select name="sort" id="sort" value={sort} onChange={(e) => {setSort(e.target.value); localStorage.setItem('sort', e.target.value); }}>
                 <option value="">Select</option>
                 <option value="date-due">Date Due</option>
                 <option value="date-created">Date Created</option>
             </select>
+            <br></br>
 
             <label htmlFor="date-filter">Select Date Due: </label>
             <input name='date-filter' type="date" value={dateDue} onChange={(e) => {setDateDue(e.target.value); localStorage.setItem('dateDue', e.target.value);}}></input>
+            <br></br>
 
             <label htmlFor="category-filter">Select Category: </label>
             <select name="category-filter" value={categoryFilter} onChange={(e) => {setCategory(e.target.value); localStorage.setItem('categoryFilter', e.target.value); }}>
@@ -207,6 +217,7 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
                 <option value="reminder">Reminder</option>
                 <option value="other">Other</option>  
             </select>
+            <br></br>
 
             <label htmlFor="status-filter">Select status: </label>
             <select name='status-filter' value={statusFilter} onChange={(e) => {setStatus(e.target.value); localStorage.setItem('statusFilter', e.target.value); }}>
@@ -215,16 +226,14 @@ function CustomTodoList({todos, toggleTodo, enableEditing, enableCategoryDropdow
                 <option value="incomplete">Incomplete</option>
                 <option value="overdue">Overdue</option>
             </select>
+            <br></br>
 
             <button onClick={handleApply}>Apply</button>
-
-            <br></br><br></br>
-            <button className='view-calendar' onClick={() => navigate('/todos-calendar')}>Go to Calendar <FaRegCalendarDays /></button>
 
             <h1>Todo List</h1>
             <br/><br/>
     
-            <div style={{ display: "flex", margin: "auto"}}><TodoListItems todos={filteredTasks}/></div>
+            <div style={{ display: "flex", flexDirection:'column', alignItems:'center', margin: "auto"}}><TodoListItems todos={filteredTasks}/></div>
 
         </div>
     );

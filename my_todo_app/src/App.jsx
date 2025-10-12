@@ -13,6 +13,7 @@ import './App.css';
 import TodosByDueDate from './TodosByDueDate.jsx';
 import Calendar from './Calendar.jsx';
 import CustomTodoList from './CustomTodoList.jsx';
+import TodoStats from './TodoStats.jsx';
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -529,6 +530,7 @@ function toggleTodo(todos, id) {
         <Route path="/login" element={<Login loginUser={loginUser} />} />
         <Route path="/todos-due-on/:date_due" element={<TodosByDueDate todos={todos} toggleTodo={toggleTodo} enableEditing={enableEditing} enableCategoryDropdown={enableCategoryDropdown} saveTitle={saveTitle} saveCategory={saveCategory} disableEditing={disableEditing} disableCategoryDropdown={disableCategoryDropdown} isEditing={isEditing} isEditingCategory={isEditingCategory}/>} />
         <Route path="/todos-calendar" element={<Calendar saveData={saveData} getData={getData}/>} />
+        <Route path="/todo-stats" element={<TodoStats tasks={todos}/>} />
       </Routes>
 
       {deferredPrompt && (
