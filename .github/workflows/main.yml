@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install PostgreSQL client
-      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+    - name: Install PostgreSQL 18 client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client-18
 
     - name: Create backup dump
       env:
