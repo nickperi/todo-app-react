@@ -2,7 +2,7 @@ name: Backup Render Postgres DB
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # Runs every day at 3AM UTC; change if needed
+    - cron: "0 1 * * *"   # Runs every day at 3AM UTC; change if needed
   workflow_dispatch:        # Allows manual trigger
 
 jobs:
