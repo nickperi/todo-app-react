@@ -26,7 +26,7 @@ jobs:
         pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -F c -f backup_$TIMESTAMP.dump
 
     - name: Upload backup as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: render-postgres-backup
         path: backup_*.dump
