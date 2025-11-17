@@ -30,10 +30,10 @@ jobs:
       run: |
         export PGPASSWORD=$DB_PASSWORD
         TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-        pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -F c -f backup_$TIMESTAMP.dump
+        pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -F c -f backup_$TIMESTAMP.sql
 
     - name: Upload backup as artifact
       uses: actions/upload-artifact@v4
       with:
         name: render-postgres-backup
-        path: backup_*.dump
+        path: backup_*.sql
