@@ -1,0 +1,32 @@
+name: Backup Render Postgres DB
+
+on:
+  schedule:
+    - cron: "0 1 * * *"   # Runs every day at 3AM UTC; change if needed
+  workflow_dispatch:        # Allows manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install PostgreSQL client
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+    - name: Create backup dump
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        export PGPASSWORD=$DB_PASSWORD
+        TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+        pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -F c -f backup_$TIMESTAMP.dump
+
+    - name: Upload backup as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: render-postgres-backup
+        path: backup_*.dump
